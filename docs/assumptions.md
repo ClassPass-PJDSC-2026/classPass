@@ -31,7 +31,7 @@ Results are **relative scenario comparisons, not forecasts**. A wide range is no
 | `ach_typical` | 4 | fixed | 1/h | Harvard HBP (2020); team assumption | low |
 | `ach_good` | 6 | fixed | 1/h | Harvard HBP (2020) | medium |
 | `school_days_per_week` | 5 | fixed | days | team assumption | high |
-| `sim_days` | 60 | fixed | days | team decision | high |
+| `sim_days` | 60 | 30-60 | days | team decision | high |
 | `sick_days_per_case` | 3 | 2–5 | days | team assumption | low |
 | `online_learning_weight` | 0.3 | 0.1–0.5 | fraction | team assumption | low |
 | `attack_rate_threshold` | 0.10 | 0.02–0.40 | fraction | team decision | high |

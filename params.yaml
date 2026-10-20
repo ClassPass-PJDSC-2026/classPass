@@ -231,14 +231,14 @@ school_days_per_week:
 
 sim_days:
   value: 60
-  min: 60
+  min: 30
   max: 60
   unit: days
   description: Length of each simulation
   source: [team_decision]
   confidence: high
   in_sensitivity: false
-  user_editable: false
+  user_editable: true
 
 # --- Learning-loss metric -----------------------------------------------------
 
