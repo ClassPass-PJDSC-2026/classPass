@@ -1,3 +1,5 @@
+
+
 # Model assumptions
 
 Every number the simulator uses lives in [`params.yaml`](../params.yaml). This page explains where each value comes from, how sure we are, and where sources disagree. Full citations are in [`references.yaml`](../references.yaml).
