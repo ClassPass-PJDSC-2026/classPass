@@ -1,0 +1,105 @@
+# Reference list for params.yaml. Every `source` key in params.yaml must exist here
+# (or be one of the reserved keys: team_assumption, team_decision).
+#
+# status:
+#   verified    – author, year, title, journal/volume/pages checked against a primary listing
+#   partial     – checked only through a secondary source, or some details still missing
+#   unverified  – not yet checked; do not cite in the final APA list until it is
+# Checked on 2026-10-19 unless noted. PM signs off before submission.
+
+rudnick_milton_2003:
+  apa: >-
+    Rudnick, S. N., & Milton, D. K. (2003). Risk of indoor airborne infection transmission
+    estimated from carbon dioxide concentration. Indoor Air, 13(3), 237–245.
+  url: https://stacks.cdc.gov/view/cdc/192288
+  status: verified
+  notes: >-
+    Citation checked on CDC Stacks. The 15–128 quanta/h influenza range attributed to this
+    paper was read in a secondary review (see wr_size_dependent_review); confirm in the
+    paper's table before final submission. DOI still to add.
+
+bueno_de_mesquita_2020:
+  apa: >-
+    Bueno de Mesquita, P. J., Noakes, C. J., & Milton, D. K. (2020). Quantitative aerobiologic
+    analysis of an influenza human challenge-transmission trial. Indoor Air, 30(6), 1189–1198.
+  doi: https://doi.org/10.1111/ina.12701
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC7687273
+  status: verified
+  notes: Reports q = 0.11 quanta/h for influenza H3 in a challenge trial. Used to document disagreement, not the range.
+
+cdph_quanta_appendix:
+  apa: >-
+    California Department of Public Health. (n.d.). Appendix 2: Quanta generation rates for
+    aerosol transmissible diseases [Table].
+  url: https://cdph.ca.gov/Programs/cls/dehl/ehl/CDPH Document Library/Appendix 2 - Quanta Generation Rates for Aerosol Transmissible Diseases.pdf
+  status: partial
+  notes: Compiles influenza quanta from several studies (15–50, 79, 128, 515 quanta/h). Publication year still to find.
+
+wr_size_dependent_review:
+  apa: >-
+    TODO authors. (TODO year). Incorporating size-dependent loss terms into the Wells-Riley
+    equation [Journal TODO].
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC7127325
+  status: partial
+  notes: Summary table gives influenza quanta ~15–500/h and cites Rudnick & Milton's 15–128/h. C2 to fill authors, year, journal.
+
+carrat_2008:
+  apa: >-
+    Carrat, F., Vergu, E., Ferguson, N. M., Lemaitre, M., Cauchemez, S., Leach, S., & Valleron,
+    A.-J. (2008). Time lines of infection and disease in human influenza: A review of volunteer
+    challenge studies. American Journal of Epidemiology, 167(7), 775–785.
+  doi: https://doi.org/10.1093/aje/kwm375
+  url: https://pubmed.ncbi.nlm.nih.gov/18230677/
+  status: verified
+  notes: >-
+    Shedding rises 0.5–1 day after challenge; mean shedding duration 4.80 days (95% CI 4.31–5.29);
+    66.9% of infections symptomatic. Healthy adult volunteers only, no data for children.
+
+leung_2020:
+  apa: >-
+    Leung, N. H. L., Chu, D. K. W., Shiu, E. Y. C., Chan, K.-H., McDevitt, J. J., Hau, B. J. P.,
+    Yen, H.-L., Li, Y., Ip, D. K. M., Peiris, J. S. M., Seto, W.-H., Leung, G. M., Milton, D. K.,
+    & Cowling, B. J. (2020). Respiratory virus shedding in exhaled breath and efficacy of face
+    masks. Nature Medicine.
+  doi: https://doi.org/10.1038/s41591-020-0843-2
+  status: partial
+  notes: >-
+    DOI and authors verified. Volume and page numbers still to add. Key finding for this model:
+    surgical masks reduced influenza RNA in respiratory droplets but not in aerosols.
+
+harvard_hbp_2020:
+  apa: >-
+    Harvard T.H. Chan School of Public Health Healthy Buildings Program. (2020). Risk reduction
+    strategies for reopening schools [Report].
+  url: https://schools.forhealth.org/ventilation-guide
+  status: partial
+  notes: >-
+    ACH tiers confirmed in a November 2020 Harvard HBP schools document: low <3, bare minimum 3–4,
+    good 4–5, excellent 5–6, ideal 6+; target at least 5 ACH. Confirm exact report title and date.
+
+buonanno_2020:
+  apa: >-
+    Buonanno, G., Stabile, L., & Morawska, L. (2020). Estimation of airborne viral emission:
+    Quanta emission rate of SARS-CoV-2 for infection risk assessment. Environment International,
+    141, 105794.
+  status: unverified
+  notes: Breathing (inhalation) rates by activity. C2 to confirm citation and the seated/standing values used for breathing_rate.
+
+deped_do64_2017:
+  apa: >-
+    Department of Education. (2017). Establishing the minimum performance standards and
+    specifications for DepEd school buildings (DepEd Order No. 64, s. 2017).
+  url: https://www.teacherph.com/deped-school-buildings-standards/
+  status: partial
+  notes: >-
+    Classroom 7.00 m × 9.00 m from wall centres; at least 10 m² of window openings. Read via a
+    secondary site; replace URL with the DepEd issuance page.
+
+deped_facilities_2010:
+  apa: >-
+    Department of Education. (2010). Educational facilities manual.
+  url: https://www.teacherph.com/deped-2010-facilities-manual-standards-disaster-risk-reduction/
+  status: partial
+  notes: >-
+    Ceiling height 2.70 m for naturally ventilated rooms; 1.40 m² per place, which caps a 63 m²
+    room at 45 students. Read via a secondary site; find the DepEd copy.

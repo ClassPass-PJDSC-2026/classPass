@@ -1,0 +1,289 @@
+# Single source of truth for every model parameter.
+# Schema per key:
+#   value         base case used by the app
+#   min / max     plausible range; used for UI bounds and sensitivity analysis
+#   unit          physical unit ("fraction" for 0–1 shares)
+#   description   one line, plain language
+#   source        key(s) in references.yaml, or team_assumption / team_decision
+#   confidence    low / medium / high (how sure we are about the base value)
+#   in_sensitivity   true → varied in the tornado and Latin hypercube runs
+#   user_editable    true → exposed as an input in the app
+#   distribution     uniform (default) or loguniform, for sampling in sensitivity runs
+# Rationale and disagreements between sources: docs/assumptions.md
+
+# --- Pathogen and exposure (influenza default) -------------------------------
+
+quanta_rate:
+  value: 15.0
+  min: 5.0
+  max: 128.0
+  unit: quanta/h
+  description: Infectious quanta emitted per infectious student per hour (influenza)
+  source: [rudnick_milton_2003, cdph_quanta_appendix, wr_size_dependent_review]
+  confidence: low
+  in_sensitivity: true
+  user_editable: false
+  distribution: loguniform
+
+breathing_rate:
+  value: 0.5
+  min: 0.3
+  max: 0.6
+  unit: m³/h
+  description: Air inhaled per student per hour while seated in class
+  source: [buonanno_2020]
+  confidence: low
+  in_sensitivity: true
+  user_editable: false
+
+latent_days:
+  value: 1.0
+  min: 0.5
+  max: 2.0
+  unit: days
+  description: Days from infection to becoming infectious (sigma = 1/latent_days)
+  source: [carrat_2008]
+  confidence: medium
+  in_sensitivity: true
+  user_editable: false
+
+infectious_days:
+  value: 4.8
+  min: 3.5
+  max: 7.0
+  unit: days
+  description: Days a student stays infectious (gamma = 1/infectious_days)
+  source: [carrat_2008]
+  confidence: medium
+  in_sensitivity: true
+  user_editable: false
+
+mask_efficiency:
+  value: 0.3
+  min: 0.0
+  max: 0.6
+  unit: fraction
+  description: Share of infectious aerosol a worn mask removes, applied to emission and inhalation
+  source: [leung_2020]
+  confidence: low
+  in_sensitivity: true
+  user_editable: false
+
+infectious_attendance:
+  value: 0.5
+  min: 0.3
+  max: 0.8
+  unit: fraction
+  description: Share of infectious students who still come to class
+  source: [carrat_2008, team_assumption]
+  confidence: low
+  in_sensitivity: true
+  user_editable: false
+
+community_beta:
+  value: 0.1
+  min: 0.05
+  max: 0.2
+  unit: 1/day
+  description: Transmission rate from contact outside school (applies every day)
+  source: [team_assumption]
+  confidence: low
+  in_sensitivity: true
+  user_editable: false
+
+initial_infected_frac:
+  value: 0.01
+  min: 0.005
+  max: 0.02
+  unit: fraction
+  description: Share of students infectious on day 0
+  source: [team_assumption]
+  confidence: low
+  in_sensitivity: true
+  user_editable: false
+
+# --- Classroom ---------------------------------------------------------------
+
+class_size:
+  value: 45
+  min: 5
+  max: 80
+  unit: students
+  description: Students in one classroom (regional presets override the default)
+  source: [deped_facilities_2010]
+  confidence: medium
+  in_sensitivity: false
+  user_editable: true
+
+room_length:
+  value: 9.0
+  min: 3.0
+  max: 30.0
+  unit: m
+  description: Classroom length
+  source: [deped_do64_2017]
+  confidence: medium
+  in_sensitivity: false
+  user_editable: true
+
+room_width:
+  value: 7.0
+  min: 3.0
+  max: 30.0
+  unit: m
+  description: Classroom width
+  source: [deped_do64_2017]
+  confidence: medium
+  in_sensitivity: false
+  user_editable: true
+
+room_height:
+  value: 2.7
+  min: 2.4
+  max: 4.0
+  unit: m
+  description: Classroom ceiling height (minimum for naturally ventilated rooms)
+  source: [deped_facilities_2010]
+  confidence: medium
+  in_sensitivity: false
+  user_editable: true
+
+session_hours:
+  value: 6.0
+  min: 4.0
+  max: 8.0
+  unit: h
+  description: Hours students spend in the classroom per school day
+  source: [team_assumption]
+  confidence: low
+  in_sensitivity: false
+  user_editable: true
+
+mask_compliance:
+  value: 0.0
+  min: 0.0
+  max: 1.0
+  unit: fraction
+  description: Share of students wearing masks (user input; scenarios may raise it)
+  source: [team_assumption]
+  confidence: high
+  in_sensitivity: false
+  user_editable: true
+
+# --- Ventilation (air changes per hour) ---------------------------------------
+
+ach:
+  value: 4.0
+  min: 0.5
+  max: 20.0
+  unit: 1/h
+  description: Air changes per hour of clean air (custom input)
+  source: [harvard_hbp_2020]
+  confidence: medium
+  in_sensitivity: false
+  user_editable: true
+
+ach_poor:
+  value: 2.0
+  min: 2.0
+  max: 2.0
+  unit: 1/h
+  description: Preset, windows mostly closed (Harvard "low" tier, under 3)
+  source: [harvard_hbp_2020, team_assumption]
+  confidence: medium
+  in_sensitivity: false
+  user_editable: false
+
+ach_typical:
+  value: 4.0
+  min: 4.0
+  max: 4.0
+  unit: 1/h
+  description: Preset, windows open (Harvard "good" tier, 4–5)
+  source: [harvard_hbp_2020, team_assumption]
+  confidence: low
+  in_sensitivity: false
+  user_editable: false
+
+ach_good:
+  value: 6.0
+  min: 6.0
+  max: 6.0
+  unit: 1/h
+  description: Preset, windows open plus fans or air cleaners (Harvard "ideal" tier, 6+)
+  source: [harvard_hbp_2020]
+  confidence: medium
+  in_sensitivity: false
+  user_editable: false
+
+# --- Schedule and horizon -----------------------------------------------------
+
+school_days_per_week:
+  value: 5
+  min: 5
+  max: 5
+  unit: days
+  description: Face-to-face school days per week
+  source: [team_assumption]
+  confidence: high
+  in_sensitivity: false
+  user_editable: false
+
+sim_days:
+  value: 60
+  min: 60
+  max: 60
+  unit: days
+  description: Length of each simulation
+  source: [team_decision]
+  confidence: high
+  in_sensitivity: false
+  user_editable: false
+
+# --- Learning-loss metric -----------------------------------------------------
+
+sick_days_per_case:
+  value: 3.0
+  min: 2.0
+  max: 5.0
+  unit: days
+  description: School days missed per infected student
+  source: [team_assumption]
+  confidence: low
+  in_sensitivity: true
+  user_editable: false
+
+online_learning_weight:
+  value: 0.3
+  min: 0.1
+  max: 0.5
+  unit: fraction
+  description: Learning lost per online day, relative to a missed face-to-face day
+  source: [team_assumption]
+  confidence: low
+  in_sensitivity: true
+  user_editable: false
+
+# --- Recommender (policy choices, not estimates) ------------------------------
+
+attack_rate_threshold:
+  value: 0.10
+  min: 0.02
+  max: 0.40
+  unit: fraction
+  description: Highest acceptable share of students infected over the simulation
+  source: [team_decision]
+  confidence: high
+  in_sensitivity: false
+  user_editable: true
+
+robustness_threshold:
+  value: 0.80
+  min: 0.50
+  max: 0.95
+  unit: fraction
+  description: Share of sampled scenarios in which an option must stay under the threshold
+  source: [team_decision]
+  confidence: high
+  in_sensitivity: false
+  user_editable: false
