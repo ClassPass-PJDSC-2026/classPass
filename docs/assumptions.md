@@ -146,6 +146,18 @@ These values have weak or no direct evidence. Each is varied in the sensitivity 
 - `sick_days_per_case`: team assumption.
 - `online_learning_weight`: team assumption.
 
+## Scenarios
+
+Each scenario in `src/schoolsim/scenarios.py` applies one or more overrides to the baseline `SchoolProfile`. Every scenario shares identical non-scenario parameters, so results are directly comparable.
+
+- **`baseline`** — current practice, no interventions.
+- **`better_ventilation`** — `ach` raised to `ach_good` (6/h, Harvard "ideal" tier).
+- **`smaller_classes`** — `class_size × 0.67`. **Limitation:** this assumes the school can create extra sections. If not, the scenario shows a potential benefit that isn't attainable.
+- **`masks`** — `mask_compliance` raised to 0.8. Effectiveness depends on `mask_efficiency`, which is itself low-confidence (see parameter table).
+- **`combined`** — better ventilation + masks. Effects multiply through `β_class`.
+- **`hybrid`** — A/B cohorts: half the class in the room on any given day, each student attends half the days. Modelled as `class_size × 0.5` **and** SEIR `attendance = 0.5`, which compound to a 4× reduction in per-susceptible transmission vs baseline. The two halves are distinct: `class_size_mult` shrinks the room population, `attendance` shrinks the days each student is exposed.
+- **`online`** — `attendance = 0`. Classroom transmission is zero; `community_beta` still applies every day, so online classes never reach zero risk.
+
 ## Limitations
 
 - **Relative, not absolute.** Use results to compare options for the same school, not to predict case counts.
