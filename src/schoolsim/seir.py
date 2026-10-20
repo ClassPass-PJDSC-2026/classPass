@@ -10,7 +10,7 @@ Continuous-time ODE
 
 ::
 
-    lambda(t) = (school_on(t) * attendance * beta_class + beta_comm) * I
+    lambda(t) = (school_on(t) * attendance * beta_class + community_beta) * I
 
     dS/dt = -lambda(t) * S
     dE/dt =  lambda(t) * S - sigma * E
@@ -22,15 +22,15 @@ Continuous-time ODE
 * ``attendance`` is 1 for face-to-face, 0.5 for hybrid, 0 for online
   (set by the scenario layer, not here).
 * ``beta_class`` [1/day] comes from :mod:`schoolsim.wells_riley`;
-  ``beta_comm`` [1/day] is a background community transmission term.
+  ``community_beta`` [1/day] is a background community transmission term.
 * ``sigma = 1 / latent_period``, ``gamma = 1 / infectious_period``
   [1/day].
 
 Units
 -----
-* ``days``, ``dt``, ``t`` : days [day].
-* ``beta_class``, ``beta_comm``, ``sigma``, ``gamma`` : 1/day.
-* ``attendance``, ``i0``, ``S``, ``E``, ``I``, ``R`` : dimensionless [-] in
+* ``sim_days``, ``dt``, ``t`` : days [day].
+* ``beta_class``, ``community_beta``, ``sigma``, ``gamma`` : 1/day.
+* ``attendance``, ``initial_infected_frac``, ``S``, ``E``, ``I``, ``R`` : dimensionless [-] in
   ``[0, 1]``.
 
 Integration
@@ -50,7 +50,6 @@ from dataclasses import dataclass
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
-
 
 __all__ = [
     "SimResult",
@@ -74,14 +73,14 @@ class SimResult:
 
     Attributes
     ----------
-    t : ndarray, shape (days + 1,)
-        Sample times [day]. Always ``[0, 1, ..., days]``.
-    S, E, I, R : ndarray, shape (days + 1,)
+    t : ndarray, shape (sim_days + 1,)
+        Sample times [day]. Always ``[0, 1, ..., sim_days]``.
+    S, E, I, R : ndarray, shape (sim_days + 1,)
         Compartment fractions [-] at each sample time.
     attack_rate : float
         Fraction of the population newly infected during the run,
-        excluding the initial seed. Equal to ``(1 - S_end) - i0``,
-        which by conservation is also ``R_end + I_end + E_end - i0``.
+        excluding the initial seed. Equal to ``(1 - S_end) - initial_infected_frac``,
+        which by conservation is also ``R_end + I_end + E_end - initial_infected_frac``.
     peak_infectious : float
         Maximum value of ``I`` over the daily samples [-].
     peak_day : int
@@ -109,7 +108,7 @@ class SimResult:
 
 def r0_effective(
     beta_class: float,
-    beta_comm: float,
+    community_beta: float,
     gamma: float,
     attendance: float,
     *,
@@ -117,7 +116,7 @@ def r0_effective(
 ) -> float:
     """Effective basic reproduction number ``R0_eff`` [-].
 
-    ``R0_eff = (school_days / 7 * attendance * beta_class + beta_comm) / gamma``
+    ``R0_eff = (school_days / 7 * attendance * beta_class + community_beta) / gamma``
 
     The ``school_days / 7`` factor averages classroom transmission over
     a week; the community term acts every day.
@@ -126,7 +125,7 @@ def r0_effective(
     ----------
     beta_class : float
         Classroom transmission rate [1/day].
-    beta_comm : float
+    community_beta : float
         Community transmission rate [1/day].
     gamma : float
         Recovery rate [1/day]. Must be positive.
@@ -155,7 +154,7 @@ def r0_effective(
             "school_days_per_week must be an integer in [0, 7]; "
             f"got {school_days_per_week!r}."
         )
-    return (school_days_per_week / 7.0 * attendance * beta_class + beta_comm) / gamma
+    return (school_days_per_week / 7.0 * attendance * beta_class + community_beta) / gamma
 
 
 # ---------------------------------------------------------------------------
@@ -177,7 +176,7 @@ def _seir_rhs(
     E: ArrayLike,
     I: ArrayLike,
     beta_class: ArrayLike,
-    beta_comm: ArrayLike,
+    community_beta: ArrayLike,
     sigma: ArrayLike,
     gamma: ArrayLike,
     attendance: ArrayLike,
@@ -191,7 +190,7 @@ def _seir_rhs(
     """
     lam = (
         _school_on(t, school_days_per_week) * attendance * beta_class
-        + beta_comm
+        + community_beta
     ) * I
     dS = -lam * S
     dE = lam * S - sigma * E
@@ -206,7 +205,7 @@ def _rk4_step(
     I: ArrayLike,
     R: ArrayLike,
     beta_class: ArrayLike,
-    beta_comm: ArrayLike,
+    community_beta: ArrayLike,
     sigma: ArrayLike,
     gamma: ArrayLike,
     attendance: ArrayLike,
@@ -224,28 +223,28 @@ def _rk4_step(
     """
     dS1, dE1, dI1, dR1 = _seir_rhs(
         t_curr, S, E, I,
-        beta_class, beta_comm, sigma, gamma, attendance, school_days_per_week,
+        beta_class, community_beta, sigma, gamma, attendance, school_days_per_week,
     )
     dS2, dE2, dI2, dR2 = _seir_rhs(
         t_curr + 0.5 * dt,
         S + 0.5 * dt * dS1,
         E + 0.5 * dt * dE1,
         I + 0.5 * dt * dI1,
-        beta_class, beta_comm, sigma, gamma, attendance, school_days_per_week,
+        beta_class, community_beta, sigma, gamma, attendance, school_days_per_week,
     )
     dS3, dE3, dI3, dR3 = _seir_rhs(
         t_curr + 0.5 * dt,
         S + 0.5 * dt * dS2,
         E + 0.5 * dt * dE2,
         I + 0.5 * dt * dI2,
-        beta_class, beta_comm, sigma, gamma, attendance, school_days_per_week,
+        beta_class, community_beta, sigma, gamma, attendance, school_days_per_week,
     )
     dS4, dE4, dI4, dR4 = _seir_rhs(
         t_curr + dt,
         S + dt * dS3,
         E + dt * dE3,
         I + dt * dI3,
-        beta_class, beta_comm, sigma, gamma, attendance, school_days_per_week,
+        beta_class, community_beta, sigma, gamma, attendance, school_days_per_week,
     )
     h6 = dt / 6.0
     return (
@@ -256,10 +255,10 @@ def _rk4_step(
     )
 
 
-def _daily_indices(days: int, dt: float, n_steps: int) -> NDArray[np.intp]:
-    """Index of the substep nearest each integer day 0..days."""
+def _daily_indices(sim_days: int, dt: float, n_steps: int) -> NDArray[np.intp]:
+    """Index of the substep nearest each integer day 0..sim_days."""
     return np.clip(
-        np.round(np.arange(days + 1) / dt).astype(np.intp), 0, n_steps
+        np.round(np.arange(sim_days + 1) / dt).astype(np.intp), 0, n_steps
     )
 
 
@@ -268,10 +267,10 @@ def _daily_indices(days: int, dt: float, n_steps: int) -> NDArray[np.intp]:
 # ---------------------------------------------------------------------------
 
 
-def _check_common(days: int, dt: float, school_days_per_week: int) -> None:
-    if days <= 0 or int(days) != days:
+def _check_common(sim_days: int, dt: float, school_days_per_week: int) -> None:
+    if sim_days <= 0 or int(sim_days) != sim_days:
         raise ValueError(
-            f"days must be a positive whole number; got {days!r}."
+            f"sim_days must be a positive whole number; got {sim_days!r}."
         )
     if not np.isfinite(dt) or dt <= 0:
         raise ValueError(f"dt must be positive and finite; got {dt!r}.")
@@ -313,37 +312,36 @@ def _check_array(
             raise ValueError(
                 f"{name} must be {op} {min_} for every sample; got {arr!r}."
             )
-    if max_ is not None:
-        if np.any(arr > max_):
-            raise ValueError(
-                f"{name} must be at most {max_} for every sample; got {arr!r}."
-            )
+    if max_ is not None and np.any(arr > max_):
+        raise ValueError(
+            f"{name} must be at most {max_} for every sample; got {arr!r}."
+        )
 
 
 def _validate_scalar_inputs(
-    beta_class, beta_comm, sigma, gamma, attendance, i0, days, dt,
+    beta_class, community_beta, sigma, gamma, attendance, initial_infected_frac, sim_days, dt,
     school_days_per_week,
 ) -> None:
     _check_scalar("beta_class", beta_class, min_=0.0)
-    _check_scalar("beta_comm", beta_comm, min_=0.0)
+    _check_scalar("community_beta", community_beta, min_=0.0)
     _check_scalar("sigma", sigma, min_=0.0, strict_min=True)
     _check_scalar("gamma", gamma, min_=0.0, strict_min=True)
     _check_scalar("attendance", attendance, min_=0.0, max_=1.0)
-    _check_scalar("i0", i0, min_=0.0, max_=1.0)
-    _check_common(days, dt, school_days_per_week)
+    _check_scalar("initial_infected_frac", initial_infected_frac, min_=0.0, max_=1.0)
+    _check_common(sim_days, dt, school_days_per_week)
 
 
 def _validate_array_inputs(
-    beta_class, beta_comm, sigma, gamma, attendance, i0, days, dt,
+    beta_class, community_beta, sigma, gamma, attendance, initial_infected_frac, sim_days, dt,
     school_days_per_week,
 ) -> None:
     _check_array("beta_class", beta_class, min_=0.0)
-    _check_array("beta_comm", beta_comm, min_=0.0)
+    _check_array("community_beta", community_beta, min_=0.0)
     _check_array("sigma", sigma, min_=0.0, strict_min=True)
     _check_array("gamma", gamma, min_=0.0, strict_min=True)
     _check_array("attendance", attendance, min_=0.0, max_=1.0)
-    _check_array("i0", i0, min_=0.0, max_=1.0)
-    _check_common(days, dt, school_days_per_week)
+    _check_array("initial_infected_frac", initial_infected_frac, min_=0.0, max_=1.0)
+    _check_common(sim_days, dt, school_days_per_week)
 
 
 # ---------------------------------------------------------------------------
@@ -353,12 +351,12 @@ def _validate_array_inputs(
 
 def simulate(
     beta_class: float,
-    beta_comm: float,
+    community_beta: float,
     sigma: float,
     gamma: float,
     attendance: float,
-    i0: float,
-    days: int,
+    initial_infected_frac: float,
+    sim_days: int,
     dt: float = 0.05,
     *,
     school_days_per_week: int = 5,
@@ -366,13 +364,13 @@ def simulate(
     """Run a single SEIR simulation and return daily samples.
 
     Fixed-step RK4 with ``dt = 0.05`` day. The returned arrays are
-    subsampled at ``t = 0, 1, ..., days``.
+    subsampled at ``t = 0, 1, ..., sim_days``.
 
     Parameters
     ----------
     beta_class : float
         Classroom transmission rate [1/day], non-negative.
-    beta_comm : float
+    community_beta : float
         Community transmission rate [1/day], non-negative.
     sigma : float
         Rate E -> I [1/day], positive.
@@ -380,10 +378,10 @@ def simulate(
         Rate I -> R [1/day], positive.
     attendance : float
         Fraction of students physically present [-], in [0, 1].
-    i0 : float
+    initial_infected_frac : float
         Initial infectious fraction [-], in [0, 1]. Initial state is
-        ``S = 1 - i0, E = 0, I = i0, R = 0``.
-    days : int
+        ``S = 1 - initial_infected_frac, E = 0, I = initial_infected_frac, R = 0``.
+    sim_days : int
         Simulation length [day], positive integer.
     dt : float, optional
         Integration step [day], default 0.05.
@@ -402,21 +400,21 @@ def simulate(
         If any parameter is out of range.
     """
     _validate_scalar_inputs(
-        beta_class, beta_comm, sigma, gamma, attendance, i0, days, dt,
-        school_days_per_week,
+        beta_class, community_beta, sigma, gamma, attendance, initial_infected_frac,
+        sim_days, dt, school_days_per_week,
     )
 
-    days_i = int(days)
-    n_steps = int(round(days_i / dt))
+    sim_days_i = int(sim_days)
+    n_steps = round(sim_days_i / dt)
 
     S_list = [0.0] * (n_steps + 1)
     E_list = [0.0] * (n_steps + 1)
     I_list = [0.0] * (n_steps + 1)
     R_list = [0.0] * (n_steps + 1)
 
-    S = 1.0 - i0
+    S = 1.0 - initial_infected_frac
     E = 0.0
-    I = i0
+    I = initial_infected_frac
     R = 0.0
     S_list[0], E_list[0], I_list[0], R_list[0] = S, E, I, R
 
@@ -424,21 +422,17 @@ def simulate(
         t_curr = k * dt
         S, E, I, R = _rk4_step(
             S, E, I, R,
-            beta_class, beta_comm, sigma, gamma, attendance,
+            beta_class, community_beta, sigma, gamma, attendance,
             t_curr, dt, school_days_per_week,
         )
-        if S < 0.0:
-            S = 0.0
-        if E < 0.0:
-            E = 0.0
-        if I < 0.0:
-            I = 0.0
-        if R < 0.0:
-            R = 0.0
+        S = max(S, 0.0)
+        E = max(E, 0.0)
+        I = max(I, 0.0)
+        R = max(R, 0.0)
         S_list[k + 1], E_list[k + 1], I_list[k + 1], R_list[k + 1] = S, E, I, R
 
-    daily_idx = _daily_indices(days_i, dt, n_steps)
-    t_daily = np.arange(days_i + 1, dtype=np.float64)
+    daily_idx = _daily_indices(sim_days_i, dt, n_steps)
+    t_daily = np.arange(sim_days_i + 1, dtype=np.float64)
     S_daily = np.asarray(S_list, dtype=np.float64)[daily_idx]
     E_daily = np.asarray(E_list, dtype=np.float64)[daily_idx]
     I_daily = np.asarray(I_list, dtype=np.float64)[daily_idx]
@@ -453,7 +447,7 @@ def simulate(
         E=E_daily,
         I=I_daily,
         R=R_daily,
-        attack_rate=float(cumulative - i0),
+        attack_rate=float(cumulative - initial_infected_frac),
         peak_infectious=float(I_daily[peak_idx]),
         peak_day=peak_idx,
         cumulative_infections=cumulative,
@@ -462,12 +456,12 @@ def simulate(
 
 def simulate_batch(
     beta_class: ArrayLike,
-    beta_comm: ArrayLike,
+    community_beta: ArrayLike,
     sigma: ArrayLike,
     gamma: ArrayLike,
     attendance: ArrayLike,
-    i0: ArrayLike,
-    days: int,
+    initial_infected_frac: ArrayLike,
+    sim_days: int,
     dt: float = 0.05,
     *,
     school_days_per_week: int = 5,
@@ -480,10 +474,10 @@ def simulate_batch(
 
     Parameters
     ----------
-    beta_class, beta_comm, sigma, gamma, attendance, i0 :
+    beta_class, community_beta, sigma, gamma, attendance, initial_infected_frac :
         Array-like of shape ``(n,)`` (or scalars, broadcast to ``n``).
         See :func:`simulate` for units and ranges.
-    days : int
+    sim_days : int
         Simulation length [day], positive integer.
     dt : float, optional
         Integration step [day], default 0.05.
@@ -495,8 +489,8 @@ def simulate_batch(
     dict of ndarray
         Keys mirror :class:`SimResult`:
 
-        * ``t``: shape ``(days + 1,)`` — day values ``[0, 1, ..., days]``.
-        * ``S, E, I, R``: shape ``(n, days + 1)``.
+        * ``t``: shape ``(sim_days + 1,)`` — day values ``[0, 1, ..., sim_days]``.
+        * ``S, E, I, R``: shape ``(n, sim_days + 1)``.
         * ``attack_rate, peak_infectious, cumulative_infections``:
           shape ``(n,)``.
         * ``peak_day``: shape ``(n,)``, integer dtype.
@@ -509,13 +503,13 @@ def simulate_batch(
     """
     # Broadcast to a common shape.
     try:
-        bc, bm, sg, gm, at, i0v = np.broadcast_arrays(
+        bc, bm, sg, gm, at, initial_infected_fracv = np.broadcast_arrays(
             np.asarray(beta_class, dtype=np.float64),
-            np.asarray(beta_comm, dtype=np.float64),
+            np.asarray(community_beta, dtype=np.float64),
             np.asarray(sigma, dtype=np.float64),
             np.asarray(gamma, dtype=np.float64),
             np.asarray(attendance, dtype=np.float64),
-            np.asarray(i0, dtype=np.float64),
+            np.asarray(initial_infected_frac, dtype=np.float64),
         )
     except ValueError as exc:
         raise ValueError(
@@ -523,8 +517,8 @@ def simulate_batch(
         ) from exc
 
     if bc.ndim == 0:
-        bc, bm, sg, gm, at, i0v = (
-            a.reshape(1) for a in (bc, bm, sg, gm, at, i0v)
+        bc, bm, sg, gm, at, initial_infected_fracv = (
+            a.reshape(1) for a in (bc, bm, sg, gm, at, initial_infected_fracv)
         )
     elif bc.ndim != 1:
         raise ValueError(
@@ -532,16 +526,16 @@ def simulate_batch(
         )
 
     _validate_array_inputs(
-        bc, bm, sg, gm, at, i0v, days, dt, school_days_per_week,
+        bc, bm, sg, gm, at, initial_infected_fracv, sim_days, dt, school_days_per_week,
     )
 
     n = bc.shape[0]
-    days_i = int(days)
-    n_steps = int(round(days_i / dt))
+    sim_days_i = int(sim_days)
+    n_steps = round(sim_days_i / dt)
 
-    S = 1.0 - i0v
+    S = 1.0 - initial_infected_fracv
     E = np.zeros(n, dtype=np.float64)
-    I = i0v.copy()
+    I = initial_infected_fracv.copy()
     R = np.zeros(n, dtype=np.float64)
 
     S_arr = np.empty((n, n_steps + 1), dtype=np.float64)
@@ -569,8 +563,8 @@ def simulate_batch(
         I_arr[:, k + 1] = I
         R_arr[:, k + 1] = R
 
-    daily_idx = _daily_indices(days_i, dt, n_steps)
-    t_daily = np.arange(days_i + 1, dtype=np.float64)
+    daily_idx = _daily_indices(sim_days_i, dt, n_steps)
+    t_daily = np.arange(sim_days_i + 1, dtype=np.float64)
     S_daily = S_arr[:, daily_idx]
     E_daily = E_arr[:, daily_idx]
     I_daily = I_arr[:, daily_idx]
@@ -579,7 +573,7 @@ def simulate_batch(
     peak_idx = np.argmax(I_daily, axis=1)
     peak_infectious = I_daily[np.arange(n), peak_idx]
     cumulative = 1.0 - S_daily[:, -1]
-    attack = cumulative - i0v
+    attack = cumulative - initial_infected_fracv
 
     return {
         "t": t_daily,
