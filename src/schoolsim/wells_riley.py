@@ -59,7 +59,6 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
-
 __all__ = [
     "airflow",
     "classroom_beta",
@@ -195,7 +194,7 @@ def infection_probability(
     n_infectors: ArrayLike,
     quanta_rate: ArrayLike,
     breathing_rate: ArrayLike,
-    hours: ArrayLike,
+    session_hours: ArrayLike,
     airflow_m3h: ArrayLike,
     mask: ArrayLike = 1.0,
 ) -> float | NDArray[np.float64]:
@@ -211,7 +210,7 @@ def infection_probability(
         Quanta generation rate [quanta/h].
     breathing_rate :
         Breathing rate [m^3/h].
-    hours :
+    session_hours :
         Exposure time [h].
     airflow_m3h :
         Ventilation airflow Q [m^3/h]. Must be positive.
@@ -233,7 +232,7 @@ def infection_probability(
     infectors = _check_non_negative("n_infectors", n_infectors)
     q = _check_non_negative("quanta_rate", quanta_rate)
     p = _check_non_negative("breathing_rate", breathing_rate)
-    t = _check_non_negative("hours", hours)
+    t = _check_non_negative("session_hours", session_hours)
     q_air = _check_airflow(airflow_m3h)
     mf = _check_unit_interval("mask", mask)
 
@@ -247,7 +246,7 @@ def classroom_beta(
     class_size: ArrayLike,
     quanta_rate: ArrayLike,
     breathing_rate: ArrayLike,
-    hours: ArrayLike,
+    session_hours: ArrayLike,
     airflow_m3h: ArrayLike,
     mask: ArrayLike = 1.0,
     infectious_attendance: ArrayLike = 1.0,
@@ -266,7 +265,7 @@ def classroom_beta(
         Quanta generation rate [quanta/h].
     breathing_rate :
         Breathing rate [m^3/h].
-    hours :
+    session_hours :
         Hours of in-person exposure per school day [h].
     airflow_m3h :
         Ventilation airflow Q [m^3/h]. Must be positive.
@@ -291,7 +290,7 @@ def classroom_beta(
     n = _check_non_negative("class_size", class_size)
     q = _check_non_negative("quanta_rate", quanta_rate)
     p = _check_non_negative("breathing_rate", breathing_rate)
-    t = _check_non_negative("hours", hours)
+    t = _check_non_negative("session_hours", session_hours)
     q_air = _check_airflow(airflow_m3h)
     mf = _check_unit_interval("mask", mask)
     a = _check_unit_interval("infectious_attendance", infectious_attendance)
