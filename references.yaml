@@ -1,105 +1,387 @@
-# Reference list for params.yaml. Every `source` key in params.yaml must exist here
-# (or be one of the reserved keys: team_assumption, team_decision).
+# Reference list: single source of truth for every citation in the app, docs, README and proposal.
+# Edit here, then run `python scripts/build_references.py` to refresh docs/references_apa7.md,
+# docs/references_apa7.html and the reference block in docs/proposal_text.md.
 #
-# status:
-#   verified    – author, year, title, journal/volume/pages checked against a primary listing
-#   partial     – checked only through a secondary source, or some details still missing
-#   unverified  – not yet checked; do not cite in the final APA list until it is
-# Checked on 2026-10-19 unless noted. PM signs off before submission.
+# Fields per entry
+#   author       in-text author text, exactly as APA 7th writes it in a citation ("Carrat et al.")
+#   year         publication year (integer) or null for statutes and undated items
+#   short        label used in app tooltips, e.g. "Carrat et al. (2008)"
+#   aliases      other in-text author strings accepted by the citation checker (abbreviations)
+#   apa          the full reference in APA 7th. *asterisks* mark italics
+#   doi / url    for convenience; they also appear inside `apa`
+#   status       verified = title, authors, year and venue checked against a publisher, library or
+#                           government record; partial = something specific is still unchecked (see notes)
+#   verified_on  date of the check
+#   checked_via  where it was checked
+#   notes        what is still open, or what the source is used for
+#
+# Reserved source keys that need no entry here: team_assumption, team_decision.
+
+wells_1955:
+  author: Wells
+  year: 1955
+  short: Wells (1955)
+  aliases: []
+  apa: >-
+    Wells, W. F. (1955). *Airborne contagion and air hygiene: An ecological study of droplet
+    infections*. Harvard University Press.
+  url: https://content.wellcomecollection.org/works/vpa396bu
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: Wellcome Collection and National Library of Ireland catalogue records
+  notes: Foundational source for the Wells-Riley idea. Published for the Commonwealth Fund by Harvard University Press.
+
+riley_1978:
+  author: Riley et al.
+  year: 1978
+  short: Riley et al. (1978)
+  aliases: []
+  apa: >-
+    Riley, E. C., Murphy, G., & Riley, R. L. (1978). Airborne spread of measles in a suburban
+    elementary school. *American Journal of Epidemiology, 107*(5), 421–432.
+    https://doi.org/10.1093/oxfordjournals.aje.a112560
+  doi: 10.1093/oxfordjournals.aje.a112560
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: PubMed 665658 and the Oxford Academic record
+  notes: School outbreak used to derive the quanta idea. Reports about 93 quanta per minute for the measles index case.
 
 rudnick_milton_2003:
+  author: Rudnick & Milton
+  year: 2003
+  short: Rudnick & Milton (2003)
+  aliases: []
   apa: >-
     Rudnick, S. N., & Milton, D. K. (2003). Risk of indoor airborne infection transmission
-    estimated from carbon dioxide concentration. Indoor Air, 13(3), 237–245.
-  url: https://stacks.cdc.gov/view/cdc/192288
+    estimated from carbon dioxide concentration. *Indoor Air, 13*(3), 237–245.
+    https://doi.org/10.1034/j.1600-0668.2003.00189.x
+  doi: 10.1034/j.1600-0668.2003.00189.x
   status: verified
+  verified_on: 2026-10-21
+  checked_via: CDC Stacks record (journal, volume, pages); DOI from the reference list of Azimi and Stephens (2013)
   notes: >-
-    Citation checked on CDC Stacks. The 15–128 quanta/h influenza range attributed to this
-    paper was read in a secondary review (see wr_size_dependent_review); confirm in the
-    paper's table before final submission. DOI still to add.
+    The 15–128 quanta per hour range for influenza was read in Azimi and Stephens (2013), which describes
+    it as based on a grounded airliner outbreak. Read the paper's own table before final submission.
+
+azimi_stephens_2013:
+  author: Azimi & Stephens
+  year: 2013
+  short: Azimi & Stephens (2013)
+  aliases: []
+  apa: >-
+    Azimi, P., & Stephens, B. (2013). HVAC filtration for controlling infectious airborne disease
+    transmission in indoor environments: Predicting risk reductions and operational costs.
+    *Building and Environment, 70*, 150–160. https://doi.org/10.1016/j.buildenv.2013.08.025
+  doi: 10.1016/j.buildenv.2013.08.025
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: PubMed Central PMC7127325 (full text read)
+  notes: >-
+    Tabulates quanta generation rates by disease (influenza about 15–500 per hour) and describes the
+    Rudnick and Milton estimate. Replaces the entry that was filed in error as
+    "wr_size_dependent_review" (that was a section heading of this paper, not a title).
+
+azimi_2020:
+  author: Azimi et al.
+  year: 2020
+  short: Azimi et al. (2020)
+  aliases: []
+  apa: >-
+    Azimi, P., Keshavarz, Z., Cedeno Laurent, J. G., & Allen, J. G. (2020). Estimating the nationwide
+    transmission risk of measles in US schools and impacts of vaccination and supplemental infection
+    control strategies. *BMC Infectious Diseases, 20*, Article 497.
+    https://doi.org/10.1186/s12879-020-05200-6
+  doi: 10.1186/s12879-020-05200-6
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: PubMed Central PMC7351650 (full text read) and the correction notice PMC7379758 (author name)
+  notes: >-
+    Recent Wells-Riley application to schools. Reports that combining advanced filtration, ventilation and air
+    purification could cut the average number of infected students by about half in the modelled US schools.
 
 bueno_de_mesquita_2020:
+  author: Bueno de Mesquita et al.
+  year: 2020
+  short: Bueno de Mesquita et al. (2020)
+  aliases: []
   apa: >-
-    Bueno de Mesquita, P. J., Noakes, C. J., & Milton, D. K. (2020). Quantitative aerobiologic
-    analysis of an influenza human challenge-transmission trial. Indoor Air, 30(6), 1189–1198.
-  doi: https://doi.org/10.1111/ina.12701
-  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC7687273
+    Bueno de Mesquita, P. J., Noakes, C. J., & Milton, D. K. (2020). Quantitative aerobiologic analysis of
+    an influenza human challenge-transmission trial. *Indoor Air, 30*(6), 1189–1198.
+    https://doi.org/10.1111/ina.12701
+  doi: 10.1111/ina.12701
   status: verified
-  notes: Reports q = 0.11 quanta/h for influenza H3 in a challenge trial. Used to document disagreement, not the range.
-
-cdph_quanta_appendix:
-  apa: >-
-    California Department of Public Health. (n.d.). Appendix 2: Quanta generation rates for
-    aerosol transmissible diseases [Table].
-  url: https://cdph.ca.gov/Programs/cls/dehl/ehl/CDPH Document Library/Appendix 2 - Quanta Generation Rates for Aerosol Transmissible Diseases.pdf
-  status: partial
-  notes: Compiles influenza quanta from several studies (15–50, 79, 128, 515 quanta/h). Publication year still to find.
-
-wr_size_dependent_review:
-  apa: >-
-    TODO authors. (TODO year). Incorporating size-dependent loss terms into the Wells-Riley
-    equation [Journal TODO].
-  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC7127325
-  status: partial
-  notes: Summary table gives influenza quanta ~15–500/h and cites Rudnick & Milton's 15–128/h. C2 to fill authors, year, journal.
+  verified_on: 2026-10-21
+  checked_via: PubMed Central PMC7687273 and White Rose eprint 161708
+  notes: Reports q = 0.11 quanta per hour (95% CI 0.088–0.12) for influenza in a challenge trial. Used to document disagreement between sources.
 
 carrat_2008:
+  author: Carrat et al.
+  year: 2008
+  short: Carrat et al. (2008)
+  aliases: []
   apa: >-
-    Carrat, F., Vergu, E., Ferguson, N. M., Lemaitre, M., Cauchemez, S., Leach, S., & Valleron,
-    A.-J. (2008). Time lines of infection and disease in human influenza: A review of volunteer
-    challenge studies. American Journal of Epidemiology, 167(7), 775–785.
-  doi: https://doi.org/10.1093/aje/kwm375
-  url: https://pubmed.ncbi.nlm.nih.gov/18230677/
+    Carrat, F., Vergu, E., Ferguson, N. M., Lemaitre, M., Cauchemez, S., Leach, S., & Valleron, A.-J.
+    (2008). Time lines of infection and disease in human influenza: A review of volunteer challenge
+    studies. *American Journal of Epidemiology, 167*(7), 775–785. https://doi.org/10.1093/aje/kwm375
+  doi: 10.1093/aje/kwm375
   status: verified
-  notes: >-
-    Shedding rises 0.5–1 day after challenge; mean shedding duration 4.80 days (95% CI 4.31–5.29);
-    66.9% of infections symptomatic. Healthy adult volunteers only, no data for children.
+  verified_on: 2026-10-21
+  checked_via: PubMed 18230677
+  notes: Healthy adult volunteers only; the paper notes no such data for children.
 
 leung_2020:
+  author: Leung et al.
+  year: 2020
+  short: Leung et al. (2020)
+  aliases: []
   apa: >-
-    Leung, N. H. L., Chu, D. K. W., Shiu, E. Y. C., Chan, K.-H., McDevitt, J. J., Hau, B. J. P.,
-    Yen, H.-L., Li, Y., Ip, D. K. M., Peiris, J. S. M., Seto, W.-H., Leung, G. M., Milton, D. K.,
-    & Cowling, B. J. (2020). Respiratory virus shedding in exhaled breath and efficacy of face
-    masks. Nature Medicine.
-  doi: https://doi.org/10.1038/s41591-020-0843-2
-  status: partial
+    Leung, N. H. L., Chu, D. K. W., Shiu, E. Y. C., Chan, K.-H., McDevitt, J. J., Hau, B. J. P., Yen, H.-L.,
+    Li, Y., Ip, D. K. M., Peiris, J. S. M., Seto, W.-H., Leung, G. M., Milton, D. K., & Cowling, B. J.
+    (2020). Respiratory virus shedding in exhaled breath and efficacy of face masks. *Nature Medicine,
+    26*(5), 676–680. https://doi.org/10.1038/s41591-020-0843-2
+  doi: 10.1038/s41591-020-0843-2
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: PubMed 32371934 and the author-manuscript record PMC8238571
+  notes: Surgical masks reduced influenza RNA in respiratory droplets; the aerosol effect for influenza was not shown.
+
+keeling_rohani_2008:
+  author: Keeling & Rohani
+  year: 2008
+  short: Keeling & Rohani (2008)
+  aliases: []
+  apa: >-
+    Keeling, M. J., & Rohani, P. (2008). *Modeling infectious diseases in humans and animals*.
+    Princeton University Press.
+  url: https://press.princeton.edu/isbn/9781400841035
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: Princeton University Press catalogue, Warwick WRAP record, KIT library catalogue (ISBN 9780691116174)
+  notes: Source for the SEIR formulation.
+
+mckay_1979:
+  author: McKay et al.
+  year: 1979
+  short: McKay et al. (1979)
+  aliases: []
+  apa: >-
+    McKay, M. D., Beckman, R. J., & Conover, W. J. (1979). A comparison of three methods for selecting
+    values of input variables in the analysis of output from a computer code. *Technometrics, 21*(2),
+    239–245.
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: BibBase record and a copy of the paper at Ohio State University
+  notes: DOI not confirmed; add it if found. Source for Latin hypercube sampling.
+
+virtanen_2020:
+  author: Virtanen et al.
+  year: 2020
+  short: Virtanen et al. (2020)
+  aliases: []
+  apa: >-
+    Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M., Reddy, T., Cournapeau, D., Burovski, E.,
+    Peterson, P., Weckesser, W., Bright, J., van der Walt, S. J., Brett, M., Wilson, J., Millman, K. J.,
+    Mayorov, N., Nelson, A. R. J., Jones, E., Kern, R., Larson, E., . . . SciPy 1.0 Contributors. (2020).
+    SciPy 1.0: Fundamental algorithms for scientific computing in Python. *Nature Methods, 17*(3),
+    261–272. https://doi.org/10.1038/s41592-019-0686-2
+  doi: 10.1038/s41592-019-0686-2
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: PubMed Central PMC7056644 and the JYX, STFC and Illinois records
+  notes: APA 7th lists the first 19 authors, then an ellipsis, then the final author (here the group "SciPy 1.0 Contributors").
+
+mckinney_2010:
+  author: McKinney
+  year: 2010
+  short: McKinney (2010)
+  aliases: []
+  apa: >-
+    McKinney, W. (2010). Data structures for statistical computing in Python. In S. van der Walt &
+    J. Millman (Eds.), *Proceedings of the 9th Python in Science Conference* (pp. 56–61).
+    https://doi.org/10.25080/Majora-92bf1922-00a
+  doi: 10.25080/Majora-92bf1922-00a
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: SciPy proceedings page and the pandas project citation file
+  notes: The paper the pandas project asks users to cite.
+
+epa_2011:
+  author: U.S. Environmental Protection Agency
+  year: 2011
+  short: U.S. EPA (2011)
+  aliases: [U.S. EPA]
+  apa: >-
+    U.S. Environmental Protection Agency. (2011). Chapter 6: Inhalation rates. In *Exposure factors
+    handbook: 2011 edition* (EPA/600/R-09/052F). https://www.epa.gov/expobox/exposure-factors-handbook-chapter-6
+  url: https://www.epa.gov/expobox/exposure-factors-handbook-chapter-6
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: EPA HERO record 11414382 and the EPA Exposure Factors Handbook page
   notes: >-
-    DOI and authors verified. Volume and page numbers still to add. Key finding for this model:
-    surgical masks reduced influenza RNA in respiratory droplets but not in aerosols.
+    Long-term mean inhalation rate for ages 6 to under 11 is 12 m³/day (about 0.5 m³/h), as quoted in EPA's own
+    RSEI technical appendix. Azimi et al. (2020) interpolate 12.96 m³/day for primary and 15.53 m³/day for secondary students.
+    Short-term "sedentary" rates are in the chapter tables; read them to tighten the in-class range.
 
 harvard_hbp_2020:
+  author: Harvard T.H. Chan School of Public Health Healthy Buildings Program
+  year: 2020
+  short: Harvard Healthy Buildings Program (2020)
+  aliases: [Harvard HBP, Harvard Healthy Buildings Program]
   apa: >-
-    Harvard T.H. Chan School of Public Health Healthy Buildings Program. (2020). Risk reduction
-    strategies for reopening schools [Report].
-  url: https://schools.forhealth.org/ventilation-guide
-  status: partial
+    Harvard T.H. Chan School of Public Health Healthy Buildings Program. (2020). *Risk reduction strategies
+    for reopening schools* [Report].
+    https://healthybuildings.hsph.harvard.edu/research/schools/risk-reduction-strategies-for-reopening-schools/healthy-buildings
+  url: https://healthybuildings.hsph.harvard.edu/research/schools/risk-reduction-strategies-for-reopening-schools/healthy-buildings
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: The program's own page on its schools report
   notes: >-
-    ACH tiers confirmed in a November 2020 Harvard HBP schools document: low <3, bare minimum 3–4,
-    good 4–5, excellent 5–6, ideal 6+; target at least 5 ACH. Confirm exact report title and date.
+    The page recommends targeting a combined 4–6 air changes per hour for classrooms. The report was issued in June 2020.
+    Wording such as "four is good, five is excellent, six is ideal" is a press quotation of the program's director, not report text.
 
-buonanno_2020:
+psa_schools_2024:
+  author: Philippine Statistics Authority
+  year: 2024
+  short: PSA (2024)
+  aliases: [PSA]
   apa: >-
-    Buonanno, G., Stabile, L., & Morawska, L. (2020). Estimation of airborne viral emission:
-    Quanta emission rate of SARS-CoV-2 for infection risk assessment. Environment International,
-    141, 105794.
-  status: unverified
-  notes: Breathing (inhalation) rates by activity. C2 to confirm citation and the seated/standing values used for breathing_rate.
+    Philippine Statistics Authority. (2024). *Number of public and private schools by region and level of
+    education: SY 2019-2020 to 2022-2023* [Data set]. OpenSTAT.
+    https://openstat.psa.gov.ph/PXWeb/pxweb/en/DB/DB__3E__CH__EL/0051C8ESCH0.px
+  url: https://openstat.psa.gov.ph/PXWeb/pxweb/en/DB/DB__3E__CH__EL/0051C8ESCH0.px
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: The OpenSTAT table page (created and last updated 5/31/2024; source agency Department of Education)
+  notes: >-
+    Public-sector counts include State and Local Universities and Colleges. Published under CC BY 4.0; credit PSA or the
+    source agency and link the terms page (https://openstat.psa.gov.ph/Terms).
+
+psa_enrollment:
+  author: Philippine Statistics Authority
+  year: null
+  short: PSA (n.d.)
+  aliases: [PSA]
+  apa: >-
+    Philippine Statistics Authority. (n.d.). *Enrollment in public and private schools by level of education*
+    [Data set]. OpenSTAT. Retrieved [date of download], from
+    https://openstat.psa.gov.ph/PXWeb/pxweb/en/DB/DB__1C/1001C8EEPS0.px
+  url: https://openstat.psa.gov.ph/PXWeb/pxweb/en/DB/DB__1C/1001C8EEPS0.px
+  status: partial
+  verified_on: 2026-10-21
+  checked_via: Search listing of the table (title, source agency DepEd). The table page itself would not open when fetched.
+  notes: >-
+    Open the table in a browser, copy its "Latest update" date into the reference, and replace [date of download] with the
+    day the CSV was exported (ticket #4).
 
 deped_do64_2017:
+  author: Department of Education
+  year: 2017
+  short: DepEd (2017)
+  aliases: [DepEd]
   apa: >-
-    Department of Education. (2017). Establishing the minimum performance standards and
-    specifications for DepEd school buildings (DepEd Order No. 64, s. 2017).
-  url: https://www.teacherph.com/deped-school-buildings-standards/
+    Department of Education. (2017). *Establishing the minimum performance standards and specifications for
+    DepEd school buildings* (DepEd Order No. 64, s. 2017). https://deped.gov.ph/?p=1768
+  url: https://deped.gov.ph/?p=1768
   status: partial
+  verified_on: 2026-10-21
+  checked_via: DepEd's own issuance page (title, date December 15, 2017, ventilation named as a design consideration)
   notes: >-
-    Classroom 7.00 m × 9.00 m from wall centres; at least 10 m² of window openings. Read via a
-    secondary site; replace URL with the DepEd issuance page.
+    The 7.00 m × 9.00 m classroom and the 10 m² window area were read on secondary sites, not in the DepEd copy. Open the
+    enclosure at the URL and confirm both before final submission. The order does not set a class size.
 
 deped_facilities_2010:
+  author: Department of Education
+  year: 2010
+  short: DepEd (2010)
+  aliases: [DepEd]
   apa: >-
-    Department of Education. (2010). Educational facilities manual.
-  url: https://www.teacherph.com/deped-2010-facilities-manual-standards-disaster-risk-reduction/
+    Department of Education. (2010). *Educational facilities manual (Revised edition of the 2007 Handbook on
+    educational facilities)*.
+    https://rtei.okfn.org/documents/Educational_Facilities_Manual._Rev_ed_of_the_2007_Handbook_on_Educational_Facilities.pdf
+  url: https://rtei.okfn.org/documents/Educational_Facilities_Manual._Rev_ed_of_the_2007_Handbook_on_Educational_Facilities.pdf
   status: partial
+  verified_on: 2026-10-21
+  checked_via: A copy of the manual hosted by the Right to Education Initiative (title and edition); no DepEd-hosted copy found
   notes: >-
-    Ceiling height 2.70 m for naturally ventilated rooms; 1.40 m² per place, which caps a 63 m²
-    room at 45 students. Read via a secondary site; find the DepEd copy.
+    The 2.70 m ceiling height for naturally ventilated rooms was read on a secondary site. Secondary sites disagree on
+    floor area per pupil (1.0 m² in the building code's rules; "7 m × 8 m for 56 pupils" in an older chapter), so no per-pupil
+    standard is used in this project.
+
+abrigo_2025:
+  author: Abrigo et al.
+  year: 2025
+  short: Abrigo et al. (2025)
+  aliases: []
+  apa: >-
+    Abrigo, M. R. M., Perez, T. D. S., Quejada, N. A. M., Daga, E. D. J. C., Estopace, K. M., Lingatong, E. E.,
+    Relos, C. M. L., Paquibot, J. L., & Gavan, D. S. A. (2025). *Low fertility, ageing buildings, and school
+    congestion in the Philippines: Tailwinds, headwinds, and some policy options* (PIDS Discussion Paper No.
+    2025-10). Philippine Institute for Development Studies. https://doi.org/10.62986/dp2025.10
+  doi: 10.62986/dp2025.10
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: The PIDS publication page (authors in published order, DOI, date June 5, 2025) and IDEAS/RePEc
+  notes: Abstract states that school infrastructure backlogs and ageing school buildings are expected to remain important issues.
+
+cariaso_2026:
+  author: Cariaso
+  year: 2026
+  short: Cariaso (2026)
+  aliases: []
+  apa: >-
+    Cariaso, B. (2026, July 25). DepEd still faces backlog of 166,000 classrooms. *The Philippine Star*.
+    https://www.philstar.com/headlines/2026/07/25/2544543/deped-still-faces-backlog-166000-classrooms
+  url: https://www.philstar.com/headlines/2026/07/25/2544543/deped-still-faces-backlog-166000-classrooms
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: The newspaper's own page
+  notes: >-
+    Reports EDCOM 2's figure of more than 166,000 classrooms (from DepEd's National School Building Inventory) against DepEd's
+    earlier estimate of about 144,000. Numbers change often; recheck the day before submission.
+
+tribune_2026:
+  author: DepEd Projects Up to 28M Enrollees
+  year: 2026
+  short: "DepEd projects up to 28M enrollees (2026)"
+  aliases: [DepEd Projects Up to 28M Enrollees, DepEd Projects]
+  apa: >-
+    DepEd projects up to 28M enrollees. (2026, May 31). *Daily Tribune*.
+    https://tribune.net.ph/2026/05/31/deped-projects-up-to-28m-enrollees
+  url: https://tribune.net.ph/2026/05/31/deped-projects-up-to-28m-enrollees
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: The newspaper's own page (no byline shown, so APA places the title in the author position)
+  notes: >-
+    Quotes DepEd's school year 2024-2025 classroom-to-student ratios of 1:32 (elementary), 1:39 (junior high) and 1:36
+    (senior high), and says actual class sizes in many highly urbanized areas often exceed 50.
+
+pna_2025:
+  author: Philippine News Agency
+  year: 2025
+  short: Philippine News Agency (2025)
+  aliases: [PNA]
+  apa: >-
+    Philippine News Agency. (2025, October 15). DOH: No outbreak of influenza-like illnesses. *SunStar*.
+    https://www.sunstar.com.ph/manila/doh-no-outbreak-of-influenza-like-illnesses
+  url: https://www.sunstar.com.ph/manila/doh-no-outbreak-of-influenza-like-illnesses
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: The article page (full text read; published October 15, 2025)
+  notes: >-
+    Covers DepEd National Capital Region's suspension of face-to-face classes, the Health Secretary's statement that cases
+    were within the usual seasonal rise and below the outbreak threshold, and his remark that influenza spreads very fast in
+    poorly ventilated rooms.
+
+ra10173_2012:
+  author: Data Privacy Act of 2012
+  year: null
+  short: Data Privacy Act of 2012
+  aliases: [Republic Act No. 10173, RA 10173]
+  apa: >-
+    Data Privacy Act of 2012, Republic Act No. 10173 (2012) (Phil.).
+    https://privacy.gov.ph/wp-content/uploads/2017/03/DPA-of-2012.pdf
+  url: https://privacy.gov.ph/wp-content/uploads/2017/03/DPA-of-2012.pdf
+  status: verified
+  verified_on: 2026-10-21
+  checked_via: Full text on the National Privacy Commission website (sections 3, 4, 11-14, 20, 21 read)
+  notes: Used in docs/privacy_and_responsible_use.md and the README privacy section.
