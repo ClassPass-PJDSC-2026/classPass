@@ -20,7 +20,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, fields, replace
 
-from .params import Param
 from .seir import SimResult, simulate
 from .wells_riley import airflow, classroom_beta, mask_factor, room_volume
 
@@ -102,20 +101,20 @@ def get_label(name: str) -> str:
     return LABELS.get(name, name)
 
 
-def _resolve(value, params: Mapping[str, Param]):
-    """Resolve a scenario override: strings are params lookups, others literals."""
-    return params[value].value if isinstance(value, str) else value
+def _resolve(value, values: Mapping[str, float]):
+    """Resolve a scenario override: strings are keys in ``values``, others literals."""
+    return values[value] if isinstance(value, str) else value
 
 
 def _apply_overrides(
-    profile: SchoolProfile, overrides: Mapping, params: Mapping[str, Param]
+    profile: SchoolProfile, overrides: Mapping, values: Mapping[str, float]
 ) -> tuple[SchoolProfile, float]:
     """Apply scenario overrides, returning ``(effective_profile, attendance)``."""
     attendance = 1.0
     class_size_mult = 1.0
     updates: dict = {}
     for key, value in overrides.items():
-        resolved = _resolve(value, params)
+        resolved = _resolve(value, values)
         if key == "class_size_mult":
             class_size_mult = resolved
         elif key == "attendance":
@@ -135,7 +134,7 @@ def _apply_overrides(
 
 
 def run_scenario(
-    profile: SchoolProfile, name: str, params: Mapping[str, Param]
+    profile: SchoolProfile, name: str, values: Mapping[str, float]
 ) -> SimResult:
     """Run one named scenario and return its :class:`SimResult`.
 
@@ -145,8 +144,9 @@ def run_scenario(
         User-facing classroom characteristics (baseline).
     name : str
         Key in :data:`SCENARIOS`.
-    params : Mapping[str, Param]
-        Model parameters from ``load_params()`` (#3).
+    values : Mapping[str, float]
+        Parameter values from ``engine_values()`` — ``{key: float}``, keys as in
+        ``params.yaml``. This matches the contract in ``engine.py``.
 
     Raises
     ------
@@ -158,9 +158,7 @@ def run_scenario(
         raise ValueError(
             f"Unknown scenario {name!r}. Known: {sorted(SCENARIOS)}."
         )
-    effective_profile, attendance = _apply_overrides(
-        profile, SCENARIOS[name], params
-    )
+    effective_profile, attendance = _apply_overrides(profile, SCENARIOS[name], values)
 
     volume = room_volume(
         effective_profile.length_m,
@@ -168,32 +166,30 @@ def run_scenario(
         effective_profile.height_m,
     )
     q_air = airflow(effective_profile.ach, volume)
-    mf = mask_factor(
-        params["mask_efficiency"].value, effective_profile.mask_compliance
-    )
+    mf = mask_factor(values["mask_efficiency"], effective_profile.mask_compliance)
     beta_class = classroom_beta(
         class_size=effective_profile.class_size,
-        quanta_rate=params["quanta_rate"].value,
-        breathing_rate=params["breathing_rate"].value,
+        quanta_rate=values["quanta_rate"],
+        breathing_rate=values["breathing_rate"],
         session_hours=effective_profile.session_hours,
         airflow_m3h=q_air,
         mask=mf,
-        infectious_attendance=params["infectious_attendance"].value,
+        infectious_attendance=values["infectious_attendance"],
     )
     return simulate(
         beta_class=beta_class,
-        community_beta=params["community_beta"].value,
-        sigma=1.0 / params["latent_days"].value,
-        gamma=1.0 / params["infectious_days"].value,
+        community_beta=values["community_beta"],
+        sigma=1.0 / values["latent_days"],
+        gamma=1.0 / values["infectious_days"],
         attendance=attendance,
-        initial_infected_frac=params["initial_infected_frac"].value,
-        sim_days=int(params["sim_days"].value),
-        school_days_per_week=int(params["school_days_per_week"].value),
+        initial_infected_frac=values["initial_infected_frac"],
+        sim_days=int(values["sim_days"]),
+        school_days_per_week=int(values["school_days_per_week"]),
     )
 
 
 def run_all(
-    profile: SchoolProfile, params: Mapping[str, Param]
+    profile: SchoolProfile, values: Mapping[str, float]
 ) -> dict[str, SimResult]:
     """Run every scenario defined in :data:`SCENARIOS`.
 
@@ -206,4 +202,4 @@ def run_all(
     ordered = list(INTERVENTION_ORDER) + [
         name for name in SCENARIOS if name not in INTERVENTION_ORDER
     ]
-    return {name: run_scenario(profile, name, params) for name in ordered}
+    return {name: run_scenario(profile, name, values) for name in ordered}
