@@ -23,6 +23,7 @@ PRESETS, _ = load_presets()
 def placeholder_engine(monkeypatch):
     """Run against the stub even after the real engine is merged, so these tests stay stable."""
     monkeypatch.setitem(sys.modules, "schoolsim.scenarios", None)
+    monkeypatch.setitem(sys.modules, "schoolsim.spatial", None)
 
 
 def start() -> AppTest:
@@ -35,11 +36,12 @@ def submit(at: AppTest) -> AppTest:
 
 
 def metrics(at: AppTest) -> dict[str, str]:
-    return {m.label: m.value for m in at.metric}
+    """KPI cards of the Results tab (the first tab)."""
+    return {m.label: m.value for m in at.tabs[0].metric}
 
 
 def deltas(at: AppTest) -> dict[str, str]:
-    return {m.label: m.delta for m in at.metric}
+    return {m.label: m.delta for m in at.tabs[0].metric}
 
 
 def default_class_size(region: str, level: str) -> int:
@@ -51,8 +53,8 @@ def default_class_size(region: str, level: str) -> int:
 def test_loads_without_errors_and_shows_a_chart_on_first_load():
     at = start()
     assert not at.exception
-    assert len(at.get("plotly_chart")) == 1
-    assert len(at.metric) == 5
+    assert len(at.tabs[0].get("plotly_chart")) == 1
+    assert len(at.tabs[0].metric) == 5
 
 
 def test_profile_is_stored_in_session_state():
@@ -239,7 +241,7 @@ def test_every_scenario_renders():
     for scenario in stub.SCENARIOS:
         at.selectbox(key="scenario").select(scenario).run()
         assert not at.exception, scenario
-        assert len(at.get("plotly_chart")) == 1
+        assert len(at.tabs[0].get("plotly_chart")) == 1
 
 
 def test_percent_and_number_toggle_both_render():

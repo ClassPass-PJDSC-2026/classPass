@@ -91,6 +91,8 @@ R0_eff = (school_days_per_week/7 · attendance · β_class + β_comm) / γ
 | `online_learning_weight` | 0.3 | 0.1–0.5 | fraction | team assumption | low |
 | `attack_rate_threshold` | 0.10 | 0.02–0.40 | fraction | team decision | high |
 | `robustness_threshold` | 0.80 | 0.50–0.95 | fraction | team decision | high |
+| `near_field_multiplier` | 3 | 0–10 | factor | team assumption (heuristic) | low |
+| `near_field_decay_m` | 1.5 | 0.5–3 | m | team assumption (heuristic) | low |
 
 "High" confidence on user inputs and team decisions means the value is a choice, not an estimate.
 
@@ -117,6 +119,8 @@ R0_eff = (school_days_per_week/7 · attendance · β_class + β_comm) / γ
 **`ach` and presets.** Harvard's Healthy Buildings Program grades classroom air changes as low (<3), bare minimum (3–4), good (4–5), excellent (5–6) and ideal (6+), with a target of at least 5. Philippine public classrooms are mostly naturally ventilated and we found no measurements, so which tier "windows open" falls in is our assumption (`ach_typical`, low confidence).
 
 **`sick_days_per_case`, `online_learning_weight`.** Inputs to the learner-days-lost metric only; they do not affect infections. Both are team assumptions and are varied in sensitivity.
+
+**`near_field_multiplier`, `near_field_decay_m`.** Used only by the seat map (ticket #26). The model adds extra risk for students sitting close to an infected student: the risk from the well-mixed room is multiplied by 1 + multiplier × exp(−distance / decay distance). Both numbers are team heuristics with no empirical validation and no source. Setting the multiplier to 0 gives the plain well-mixed model, in which every other student has the same risk. They do not affect the Results, Compare or Sensitivity tabs.
 
 **`attack_rate_threshold`, `robustness_threshold`.** Policy choices for the recommender. The user can change the attack-rate threshold in the app.
 
@@ -145,6 +149,8 @@ These values have weak or no direct evidence. Each is varied in the sensitivity 
 - `ach_typical`: no measured ACH for Philippine classrooms.
 - `sick_days_per_case`: team assumption.
 - `online_learning_weight`: team assumption.
+- `near_field_multiplier`: heuristic with no empirical validation; seat map only.
+- `near_field_decay_m`: heuristic with no empirical validation; seat map only.
 
 ## Limitations
 
