@@ -123,7 +123,7 @@ def test_engine_values_apply_sidebar_overrides():
 
 def test_tooltip_has_unit_range_and_source():
     text = describe_param(PARAMS["room_length"], REFS)
-    assert "Unit: m." in text and "Range: 3–30." in text and "DepEd Order No. 64, s. 2017" in text
+    assert "Unit: m." in text and "Range: 3–30." in text and "DepEd (2017)" in text
 
 
 def test_tooltip_can_show_percent():
