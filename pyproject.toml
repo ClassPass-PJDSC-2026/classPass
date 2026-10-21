@@ -15,9 +15,9 @@ license = { text = "MIT" }
 where = ["src"]
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py310"
-src = ["src", "tests", "app", "scripts"]
+src = ["src"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
@@ -25,3 +25,6 @@ select = ["E", "F", "I", "B", "UP"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/schoolsim/seir.py" = ["E741"]
