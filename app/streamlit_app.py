@@ -23,7 +23,10 @@ import streamlit as st  # noqa: E402
 st.set_page_config(page_title="Classroom Outbreak Simulator", page_icon="🏫", layout="wide")
 
 import sidebar  # noqa: E402
+from compare_tab import render_compare  # noqa: E402
+from notices import DATA_NOTICE, FOOTER_NOTICE, render_privacy_notice  # noqa: E402
 from results_tab import render_results  # noqa: E402
+from seat_map_tab import render_seat_map  # noqa: E402
 
 from schoolsim.engine import PROFILE_FIELDS, get_backend  # noqa: E402
 from schoolsim.inputs import engine_values  # noqa: E402
@@ -53,6 +56,15 @@ def _run_all(engine_name: str, profile: dict, values: dict) -> dict:
     """Run every scenario. ``engine_name`` is part of the cache key so switching from the
     placeholder to the real engine never serves old results."""
     return get_backend().run_all(profile, values)
+
+
+def _recommended_id() -> str | None:
+    """Scenario chosen by the recommender (ticket #14). None until that exists.
+
+    When recommend.py is merged, call it here and return its scenario id; the Compare tab
+    then highlights that row automatically.
+    """
+    return None
 
 
 def main() -> None:
@@ -86,17 +98,23 @@ def main() -> None:
         st.error("The simulation could not run with these inputs. Change them and press Run simulation.")
         st.stop()
 
-    tab_results, tab_compare, tab_sens, tab_assume = st.tabs(["Results", "Compare", "Sensitivity", "Assumptions"])
+    tab_results, tab_compare, tab_seats, tab_sens, tab_assume = st.tabs(
+        ["Results", "Compare", "Seat map", "Sensitivity", "Assumptions"]
+    )
     with tab_results:
         render_results(profile, values, results, backend)
     with tab_compare:
-        st.info("The scenario comparison is built in ticket #12.")
+        render_compare(profile, values, results, backend, _recommended_id())
+    with tab_seats:
+        render_seat_map(profile, values, params)
     with tab_sens:
         st.info("The sensitivity analysis is built in ticket #13.")
     with tab_assume:
-        st.info("The assumptions page is built in ticket #15.")
+        st.info("The full assumptions table is built in ticket #15.")
+        render_privacy_notice()
 
-    st.caption("Scenario simulation for decision support, not a medical forecast.")
+    st.caption(FOOTER_NOTICE)
+    st.caption(DATA_NOTICE)
 
 
 main()
