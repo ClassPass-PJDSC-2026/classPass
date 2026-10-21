@@ -1,0 +1,51 @@
+# References (APA 7th)
+
+Generated from `references.yaml` by `scripts/build_references.py`. Do not edit by hand.
+Open `references_apa7.html` in a browser, select all and copy it to paste with the italics
+and the hanging indent.
+
+Abrigo, M. R. M., Perez, T. D. S., Quejada, N. A. M., Daga, E. D. J. C., Estopace, K. M., Lingatong, E. E., Relos, C. M. L., Paquibot, J. L., & Gavan, D. S. A. (2025). *Low fertility, ageing buildings, and school congestion in the Philippines: Tailwinds, headwinds, and some policy options* (PIDS Discussion Paper No. 2025-10). Philippine Institute for Development Studies. https://doi.org/10.62986/dp2025.10
+
+Azimi, P., Keshavarz, Z., Cedeno Laurent, J. G., & Allen, J. G. (2020). Estimating the nationwide transmission risk of measles in US schools and impacts of vaccination and supplemental infection control strategies. *BMC Infectious Diseases, 20*, Article 497. https://doi.org/10.1186/s12879-020-05200-6
+
+Azimi, P., & Stephens, B. (2013). HVAC filtration for controlling infectious airborne disease transmission in indoor environments: Predicting risk reductions and operational costs. *Building and Environment, 70*, 150–160. https://doi.org/10.1016/j.buildenv.2013.08.025
+
+Bueno de Mesquita, P. J., Noakes, C. J., & Milton, D. K. (2020). Quantitative aerobiologic analysis of an influenza human challenge-transmission trial. *Indoor Air, 30*(6), 1189–1198. https://doi.org/10.1111/ina.12701
+
+Cariaso, B. (2026, July 25). DepEd still faces backlog of 166,000 classrooms. *The Philippine Star*. https://www.philstar.com/headlines/2026/07/25/2544543/deped-still-faces-backlog-166000-classrooms
+
+Carrat, F., Vergu, E., Ferguson, N. M., Lemaitre, M., Cauchemez, S., Leach, S., & Valleron, A.-J. (2008). Time lines of infection and disease in human influenza: A review of volunteer challenge studies. *American Journal of Epidemiology, 167*(7), 775–785. https://doi.org/10.1093/aje/kwm375
+
+Data Privacy Act of 2012, Republic Act No. 10173 (2012) (Phil.). https://privacy.gov.ph/wp-content/uploads/2017/03/DPA-of-2012.pdf
+
+Department of Education. (2010). *Educational facilities manual (Revised edition of the 2007 Handbook on educational facilities)*. https://rtei.okfn.org/documents/Educational_Facilities_Manual._Rev_ed_of_the_2007_Handbook_on_Educational_Facilities.pdf
+
+Department of Education. (2017). *Establishing the minimum performance standards and specifications for DepEd school buildings* (DepEd Order No. 64, s. 2017). https://deped.gov.ph/?p=1768
+
+DepEd projects up to 28M enrollees. (2026, May 31). *Daily Tribune*. https://tribune.net.ph/2026/05/31/deped-projects-up-to-28m-enrollees
+
+Harvard T.H. Chan School of Public Health Healthy Buildings Program. (2020). *Risk reduction strategies for reopening schools* [Report]. https://healthybuildings.hsph.harvard.edu/research/schools/risk-reduction-strategies-for-reopening-schools/healthy-buildings
+
+Keeling, M. J., & Rohani, P. (2008). *Modeling infectious diseases in humans and animals*. Princeton University Press.
+
+Leung, N. H. L., Chu, D. K. W., Shiu, E. Y. C., Chan, K.-H., McDevitt, J. J., Hau, B. J. P., Yen, H.-L., Li, Y., Ip, D. K. M., Peiris, J. S. M., Seto, W.-H., Leung, G. M., Milton, D. K., & Cowling, B. J. (2020). Respiratory virus shedding in exhaled breath and efficacy of face masks. *Nature Medicine, 26*(5), 676–680. https://doi.org/10.1038/s41591-020-0843-2
+
+McKay, M. D., Beckman, R. J., & Conover, W. J. (1979). A comparison of three methods for selecting values of input variables in the analysis of output from a computer code. *Technometrics, 21*(2), 239–245.
+
+McKinney, W. (2010). Data structures for statistical computing in Python. In S. van der Walt & J. Millman (Eds.), *Proceedings of the 9th Python in Science Conference* (pp. 56–61). https://doi.org/10.25080/Majora-92bf1922-00a
+
+Philippine News Agency. (2025, October 15). DOH: No outbreak of influenza-like illnesses. *SunStar*. https://www.sunstar.com.ph/manila/doh-no-outbreak-of-influenza-like-illnesses
+
+Philippine Statistics Authority. (2024). *Number of public and private schools by region and level of education: SY 2019-2020 to 2022-2023* [Data set]. OpenSTAT. https://openstat.psa.gov.ph/PXWeb/pxweb/en/DB/DB__3E__CH__EL/0051C8ESCH0.px
+
+Philippine Statistics Authority. (n.d.). *Enrollment in public and private schools by level of education* [Data set]. OpenSTAT. Retrieved [date of download], from https://openstat.psa.gov.ph/PXWeb/pxweb/en/DB/DB__1C/1001C8EEPS0.px
+
+Riley, E. C., Murphy, G., & Riley, R. L. (1978). Airborne spread of measles in a suburban elementary school. *American Journal of Epidemiology, 107*(5), 421–432. https://doi.org/10.1093/oxfordjournals.aje.a112560
+
+Rudnick, S. N., & Milton, D. K. (2003). Risk of indoor airborne infection transmission estimated from carbon dioxide concentration. *Indoor Air, 13*(3), 237–245. https://doi.org/10.1034/j.1600-0668.2003.00189.x
+
+U.S. Environmental Protection Agency. (2011). Chapter 6: Inhalation rates. In *Exposure factors handbook: 2011 edition* (EPA/600/R-09/052F). https://www.epa.gov/expobox/exposure-factors-handbook-chapter-6
+
+Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M., Reddy, T., Cournapeau, D., Burovski, E., Peterson, P., Weckesser, W., Bright, J., van der Walt, S. J., Brett, M., Wilson, J., Millman, K. J., Mayorov, N., Nelson, A. R. J., Jones, E., Kern, R., Larson, E., . . . SciPy 1.0 Contributors. (2020). SciPy 1.0: Fundamental algorithms for scientific computing in Python. *Nature Methods, 17*(3), 261–272. https://doi.org/10.1038/s41592-019-0686-2
+
+Wells, W. F. (1955). *Airborne contagion and air hygiene: An ecological study of droplet infections*. Harvard University Press.

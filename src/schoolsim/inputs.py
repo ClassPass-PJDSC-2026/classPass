@@ -23,29 +23,21 @@ VENTILATION_CAPTIONS = {
 # Warn below this floor area per student (m²). Bug-bash rule from the ticket list.
 MIN_AREA_PER_STUDENT_M2 = 1.0
 
-# Short citation labels for tooltips. A `short` field in references.yaml takes precedence.
-_SHORT_LABELS = {
-    "rudnick_milton_2003": "Rudnick & Milton (2003)",
-    "bueno_de_mesquita_2020": "Bueno de Mesquita et al. (2020)",
-    "cdph_quanta_appendix": "CDPH quanta appendix",
-    "wr_size_dependent_review": "Wells-Riley size-dependent review",
-    "carrat_2008": "Carrat et al. (2008)",
-    "leung_2020": "Leung et al. (2020)",
-    "harvard_hbp_2020": "Harvard Healthy Buildings Program (2020)",
-    "buonanno_2020": "Buonanno et al. (2020)",
-    "deped_do64_2017": "DepEd Order No. 64, s. 2017",
-    "deped_facilities_2010": "DepEd (2010)",
+# Labels for the reserved source keys that have no entry in references.yaml.
+_RESERVED_LABELS = {
     "team_assumption": "team assumption",
     "team_decision": "team decision",
 }
 
 
 def source_label(keys: tuple[str, ...] | list[str], refs: Mapping[str, Mapping[str, Any]] | None = None) -> str:
-    """Human-readable source text for tooltips, e.g. ``"Carrat et al. (2008), team assumption"``."""
+    """Human-readable source text for tooltips, e.g. ``"Carrat et al. (2008), team assumption"``.
+
+    The label comes from the ``short`` field of the entry in references.yaml."""
     refs = refs or {}
     labels = []
     for key in keys:
-        label = refs.get(key, {}).get("short") or _SHORT_LABELS.get(key) or key.replace("_", " ")
+        label = refs.get(key, {}).get("short") or _RESERVED_LABELS.get(key) or key.replace("_", " ")
         labels.append(label)
     return ", ".join(labels)
 

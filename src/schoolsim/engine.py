@@ -7,6 +7,7 @@ differ from the tickets, this is the only file that needs changing.
 
 Expected real API (ticket #9):
     SCENARIOS: dict[str, dict]            scenario id -> definition (optional "attendance")
+    DISRUPTION_ORDER: tuple[str, ...]     optional; least to most disruptive (defaults to the list above)
     LABELS: dict[str, str]                scenario id -> human-readable label
     SchoolProfile(class_size, length_m, width_m, height_m, ach, session_hours, mask_compliance)
     run_all(profile, values) -> dict[str, SimResult]
@@ -21,6 +22,17 @@ import importlib
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
+
+# Least to most disruptive (ticket #9). "≈" ties (ventilation, masks, combined) keep this order.
+DISRUPTION_ORDER = (
+    "baseline",
+    "better_ventilation",
+    "masks",
+    "combined",
+    "smaller_classes",
+    "hybrid",
+    "online",
+)
 
 PROFILE_FIELDS = (
     "class_size",
@@ -40,6 +52,7 @@ class Backend:
     labels: Mapping[str, str]
     profile_cls: type
     _run_all: Callable[..., Mapping[str, Any]]
+    _order: tuple[str, ...] = DISRUPTION_ORDER
 
     @property
     def is_placeholder(self) -> bool:
@@ -48,6 +61,12 @@ class Backend:
     @property
     def scenario_ids(self) -> list[str]:
         return list(self.scenarios)
+
+    @property
+    def ordered_ids(self) -> list[str]:
+        """Scenario ids from least to most disruptive; unknown ids go last in their own order."""
+        known = [sid for sid in self._order if sid in self.scenarios]
+        return known + [sid for sid in self.scenarios if sid not in known]
 
     def label(self, scenario_id: str) -> str:
         return self.labels.get(scenario_id, scenario_id.replace("_", " ").capitalize())
@@ -74,7 +93,8 @@ def get_backend() -> Backend:
     """Return the real engine if it is importable, otherwise the placeholder."""
     try:
         mod = importlib.import_module("schoolsim.scenarios")
-        return Backend("schoolsim", mod.SCENARIOS, mod.LABELS, mod.SchoolProfile, mod.run_all)
+        order = tuple(getattr(mod, "DISRUPTION_ORDER", DISRUPTION_ORDER))
+        return Backend("schoolsim", mod.SCENARIOS, mod.LABELS, mod.SchoolProfile, mod.run_all, order)
     except (ImportError, AttributeError):
         from schoolsim import _stub_engine as stub
 

@@ -19,7 +19,7 @@ quanta_rate:
   max: 128.0
   unit: quanta/h
   description: Infectious quanta emitted per infectious student per hour (influenza)
-  source: [rudnick_milton_2003, cdph_quanta_appendix, wr_size_dependent_review]
+  source: [rudnick_milton_2003, azimi_stephens_2013]
   confidence: low
   in_sensitivity: true
   user_editable: false
@@ -31,7 +31,7 @@ breathing_rate:
   max: 0.6
   unit: m³/h
   description: Air inhaled per student per hour while seated in class
-  source: [buonanno_2020]
+  source: [epa_2011]
   confidence: low
   in_sensitivity: true
   user_editable: false
@@ -110,7 +110,7 @@ class_size:
   max: 80
   unit: students
   description: Students in one classroom (regional presets override the default)
-  source: [deped_facilities_2010]
+  source: [team_assumption]
   confidence: medium
   in_sensitivity: false
   user_editable: true
@@ -287,3 +287,26 @@ robustness_threshold:
   confidence: high
   in_sensitivity: false
   user_editable: false
+
+
+near_field_multiplier:
+  value: 3.0
+  min: 0.0
+  max: 10.0
+  unit: factor
+  description: Extra infection risk right next to an infected student, as a multiple of the well-mixed risk (seat map only)
+  source: [team_assumption]
+  confidence: low
+  in_sensitivity: false
+  user_editable: true
+
+near_field_decay_m:
+  value: 1.5
+  min: 0.5
+  max: 3.0
+  unit: m
+  description: Distance over which the near-field extra risk fades (seat map only)
+  source: [team_assumption]
+  confidence: low
+  in_sensitivity: false
+  user_editable: true
