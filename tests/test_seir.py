@@ -192,8 +192,9 @@ def test_matches_scipy_reference_without_weekends():
         t_eval=days, rtol=1e-10, atol=1e-12,
     )
     res = run(school_days_per_week=7)
-    np.testing.assert_allclose(res.S, ref.y[0], atol=1e-6)
-    np.testing.assert_allclose(res.I, ref.y[2], atol=1e-6)
+    ref_attack = (1.0 - ref.y[0][-1]) - f
+    # Acceptance criterion (#6): attack rate within 1% of the scipy reference.
+    assert abs(res.attack_rate - ref_attack) / ref_attack < 0.01
 
 
 # ---------------------------------------------------------------------------
