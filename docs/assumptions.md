@@ -8,6 +8,61 @@ Results are **relative scenario comparisons, not forecasts**. A wide range is no
 
 **Default disease:** seasonal influenza. Other diseases are handled by calibrated R₀ mode (ticket #25).
 
+## Model equations
+
+The simulator couples two models. Wells-Riley turns the physical classroom into a per-school-day transmission rate; SEIR projects that rate across the school population over weeks. Every symbol below corresponds to a parameter in `params.yaml`.
+
+**Room to transmission rate.** Room volume and ventilation airflow are:
+
+```
+V = L · W · H                     [m³]
+Q = ACH · V                       [m³/h]
+```
+
+Masks cut both emission (by the infector) and inhalation (by the susceptible), so their effect enters squared. `mask_efficiency` is how much aerosol a mask removes; `mask_compliance` is the fraction of students wearing one:
+
+```
+mf = (1 − mask_efficiency · mask_compliance)²       [-]
+```
+
+Wells-Riley gives the probability that one susceptible student is infected in one session in a room with `I` infectors:
+
+```
+P = 1 − exp(−I · q · p · t · mf / Q)                [-]
+```
+
+with `q` the quanta generation rate [quanta/h], `p` the breathing rate [m³/h] and `t` the session length [h]. Under homogeneous mixing, the number of infectors actually present on a school day is `class_size · (I/N) · infectious_attendance`, so the per-school-day transmission rate is:
+
+```
+β_class = class_size · infectious_attendance · q · p · t · mf / Q   [1/day]
+```
+
+and the force of infection from the classroom is `β_class · I`.
+
+**SEIR.** With `S, E, I, R` as fractions of the school population (`S + E + I + R = 1`):
+
+```
+λ(t) = (school_on(t) · attendance · β_class + β_comm) · I
+dS/dt = −λS
+dE/dt =  λS − σE
+dI/dt =  σE − γI
+dR/dt =  γI
+```
+
+where `σ = 1/latent_days`, `γ = 1/infectious_days`, `school_on(t)` is 1 on school days and 0 on weekends, and `attendance` is 1 for face-to-face, 0.5 for hybrid, 0 for online. The effective reproduction number is:
+
+```
+R0_eff = (school_days_per_week/7 · attendance · β_class + β_comm) / γ
+```
+
+`R0_eff > 1` means infections grow; `R0_eff < 1` means they die out. In calibrated R₀ mode (#25), `quanta_rate` is solved for a target `R0_eff` at the baseline profile rather than taken from the table below; the same equations apply, with `q` treated as the unknown.
+
+**Assumptions embedded in these equations.**
+- **Well-mixed air, steady state.** Wells-Riley assumes the air in the room is evenly mixed and that infectors have been present long enough to reach a steady quanta concentration. Neither holds exactly in a real classroom, especially in the first minutes after entry. Near-desk exposure is not modelled here; the seat map (#26) is a separate heuristic.
+- **Homogeneous mixing across the school.** SEIR treats all students as one population. It ignores grade levels, friend groups and households.
+- **One infectious period for all.** Every infected student follows the same `latent_days` and `infectious_days`, drawn from studies of mostly healthy adults. Children may shed longer, which is why `infectious_days` has a wide range.
+- **Shedding as infectiousness.** The infectious period is approximated by viral shedding duration; the two are correlated but not identical.
+
 ## Parameter table
 
 | Key | Base | Range | Unit | Source | Confidence |
