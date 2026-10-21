@@ -6,6 +6,7 @@ charset-normalizer==3.5.2
 click==8.5.0
 colorama==0.4.6
 contourpy==1.3.2
+coverage==7.16.2
 cycler==0.12.1
 exceptiongroup==1.3.1
 fonttools==4.65.0
@@ -33,6 +34,7 @@ pydeck==0.9.3
 Pygments==2.21.0
 pyparsing==3.3.3
 pytest==9.1.1
+pytest-cov==7.1.0
 python-dateutil==2.9.0.post0
 python-multipart==0.0.32
 pytz==2026.5
