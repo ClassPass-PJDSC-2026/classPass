@@ -55,7 +55,7 @@ Results are **relative scenario comparisons, not forecasts**. A wide range is no
 
 **`initial_infected_frac`.** Share of students already infectious at the start of the simulation. Team assumption.
 
-**`class_size`.** The default is a team assumption; regional presets from `data/processed/presets.csv` replace it. National averages from DepEd data are 32 learners per classroom in elementary, 39 in junior high and 36 in senior high, but actual classes in many highly urbanized areas often exceed 50 ("DepEd Projects Up to 28M Enrollees," 2026). We did not find a DepEd standard for learners per classroom that we could read and cite, so none is used.
+**`class_size`.** The default is a team assumption; regional presets from `data/processed/presets.csv` replace it (see "Regional presets" below). National averages from DepEd data are 32 learners per classroom in elementary, 39 in junior high and 36 in senior high, but actual classes in many highly urbanized areas often exceed 50 ("DepEd Projects Up to 28M Enrollees," 2026). We did not find a DepEd standard for learners per classroom that we could read and cite, so none is used.
 
 **`room_length`, `room_width`.** DepEd's school-building standards give a classroom of 7.00 × 9.00 m measured from wall centres (DepEd, 2017). This was read on secondary sites; confirm it in the DepEd copy.
 
@@ -70,6 +70,58 @@ Results are **relative scenario comparisons, not forecasts**. A wide range is no
 **`near_field_multiplier`, `near_field_decay_m`.** Used only by the seat map (ticket #26). The model adds extra risk for students sitting close to an infected student: the risk from the well-mixed room is multiplied by 1 + multiplier × exp(−distance / decay distance). Both numbers are team heuristics with no empirical validation and no source. Setting the multiplier to 0 gives the plain well-mixed model, in which every other student has the same risk. They do not affect the Results, Compare or Sensitivity tabs.
 
 **`attack_rate_threshold`, `robustness_threshold`.** Policy choices for the recommender. The user can change the attack-rate threshold in the app.
+
+## Regional presets (`scripts/make_presets.py`, ticket #8)
+
+Regional defaults for class size and school size are built from three raw tables (provenance in [`data/README.md`](../data/README.md)) and written to `data/processed/presets.csv`. They are starting values that the user can override in the sidebar.
+
+**How they are computed.** The three tables are standardised to canonical region and level names and merged on (region, level):
+
+- `learners_per_classroom` = enrollment ÷ classrooms
+- `learners_per_school` = enrollment ÷ schools
+
+Elementary, JHS and SHS are the levels used. Rows missing any of enrollment, schools or classrooms are logged and left out of the output, never silently dropped, and the app falls back to its defaults for those combinations. Values outside 15–100 learners per classroom are flagged in the log as a sanity check.
+
+**Sources.**
+
+| Table | Source | School year |
+|---|---|---|
+| Enrollment (public; Elementary, JHS, SHS) | PSA OpenSTAT (DepEd data) | 2023-2024 |
+| Schools (public; all levels) | PSA (2024), OpenSTAT | 2022-2023 |
+| Classrooms | DepEd National School Building Inventory | <school year, once R3 is in> |
+
+**Region names.** Names have changed over time, so every source label is mapped to one canonical label. The canonical labels match those the app already uses (sidebar and placeholder presets). Old or alternative spellings are accepted as aliases.
+
+| Canonical label | Also accepted |
+|---|---|
+| NCR | National Capital Region, Metro Manila |
+| CAR | Cordillera Administrative Region, Cordillera |
+| Ilocos Region | Region I, Region 1 |
+| Cagayan Valley | Region II, Region 2 |
+| Central Luzon | Region III, Region 3 |
+| CALABARZON | Region IV-A, Region 4A |
+| MIMAROPA | Region IV-B, Region 4B, MIMAROPA Region |
+| Bicol Region | Region V, Region 5 |
+| Western Visayas | Region VI, Region 6 |
+| Central Visayas | Region VII, Region 7 |
+| NIR | Negros Island Region |
+| Eastern Visayas | Region VIII, Region 8 |
+| Zamboanga Peninsula | Region IX, Region 9 |
+| Northern Mindanao | Region X, Region 10 |
+| Davao Region | Region XI, Region 11 |
+| SOCCSKSARGEN | Region XII, Region 12 |
+| CARAGA | Region XIII, Region 13 |
+| BARMM | ARMM, Autonomous Region in Muslim Mindanao, Bangsamoro Autonomous Region in Muslim Mindanao |
+
+ARMM is treated as BARMM (renamed in 2019). Source labels that match no entry, such as national totals, are dropped and logged. The mapping lives in `REGION_ALIASES` in `src/schoolsim/presets_build.py`, and a test checks that every region in the app's placeholder table is a canonical label. <Update this table if the real run needs more aliases or if a source treats NIR differently.>
+
+**Limitations specific to presets.**
+
+- **Different school years.** Enrollment (2023-2024), schools (2022-2023) and classrooms (<SY>) are not from the same year. The output records `sy_enrollment` and `sy_classrooms`. Ratios mix years and can be off where enrollment or building stock changed quickly.
+- **"Public" is not defined the same way in every table.** The PSA public-school counts include State and Local Universities and Colleges (SUCs/LUCs). The enrollment table lists SUCs/LUCs as a separate type from Public, so enrollment (public only) and schools (public including SUCs/LUCs) do not cover exactly the same institutions.
+- **Learners per classroom is not class size.** Where schools run shifts, the same classroom serves more than one group per day, so learners per classroom overstates the number of students in a room at once. Treat the preset as a starting point and override it in the sidebar.
+- **Regional averages hide the spread.** A regional figure says nothing about the crowded or sparse schools within the region.
+- **Incomplete combinations.** Any region and level that is missing from one of the three sources has no preset, and the app uses the default class size for it.
 
 ## Where sources disagree
 
@@ -120,6 +172,8 @@ Each scenario in `src/schoolsim/scenarios.py` applies one or more overrides to t
 - **Homogeneous mixing across the school.** SEIR treats all students as one population (Keeling & Rohani, 2008); it ignores grade levels, friend groups and households.
 - **Shedding as infectiousness.** Infectious period is approximated by viral shedding duration.
 - **Learners per classroom is not class size** where schools run shifts; presets are a starting point that users can override.
+- **Presets mix school years and definitions.** Enrollment, schools and classroom counts come from different school years, and "public" is defined slightly differently across the PSA tables (see "Regional presets").
+- **Regional averages only.** Presets are region-by-level averages. No per-school data is used.
 - **One disease at a time.** The default is influenza; other diseases rely on calibrated R₀ mode.
 
 ## Changes from the ticket's starting values
