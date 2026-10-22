@@ -312,3 +312,11 @@ def test_batch_rejects_2d_input():
 def test_batch_validation(overrides):
     with pytest.raises(ValueError):
         simulate_batch(**_batch_kwargs(**overrides))
+
+def test_simulate_is_deterministic():
+    a = run()
+    b = run()
+    for key in ("t", "S", "E", "I", "R"):
+        assert np.array_equal(getattr(a, key), getattr(b, key)), key
+    assert a.attack_rate == b.attack_rate
+    assert a.peak_day == b.peak_day
