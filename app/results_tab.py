@@ -136,8 +136,20 @@ def render_results(
     values: Mapping[str, float],
     results: Mapping[str, Any],
     backend: Backend,
+    *,
+    transmission_mode: str = "physical",
+    calibrated_quanta: float | None = None,
+    preset_name: str | None = None,
 ) -> None:
     """Draw the Results tab for the scenario chosen in the select box."""
+    if transmission_mode == "calibrated" and calibrated_quanta is not None:
+        preset_text = f" ({preset_name} preset)" if preset_name else ""
+        st.info(
+            f"**Calibrated R0 mode**{preset_text}. Quanta rate = "
+            f"{calibrated_quanta:.1f} quanta/h, solved so the baseline school "
+            f"reproduces the target R0. Physical interventions still change "
+            f"transmission from this baseline."
+        )
     st.caption(
         f"{profile['region']} · {LEVEL_NAMES.get(profile['level'], profile['level'])} · "
         f"{profile['class_size']} students per class · "
