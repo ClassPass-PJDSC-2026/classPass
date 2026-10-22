@@ -394,7 +394,7 @@ biggerstaff_2014:
   apa: >-
     Biggerstaff, M., Cauchemez, S., Reed, C., Gambhir, M., & Finelli, L. (2014). Estimates of the
     reproduction number for seasonal, pandemic, and zoonotic influenza: A systematic review of the
-    literature. *BMC Infectious Diseases*, *14*, Article 480. https://doi.org/10.1186/1471-2334-14-480
+    literature. *BMC Infectious Diseases, 14*, Article 480. https://doi.org/10.1186/1471-2334-14-480
   doi: 10.1186/1471-2334-14-480
   status: partial
   verified_on: 2026-10-22
@@ -411,7 +411,7 @@ lessler_2009:
   apa: >-
     Lessler, J., Reich, N. G., Brookmeyer, R., Perl, T. M., Nelson, K. E., & Cummings, D. A. T.
     (2009). Incubation periods of acute respiratory viral infections: A systematic review.
-    *The Lancet Infectious Diseases*, *9*(5), 291-300. https://doi.org/10.1016/S1473-3099(09)70069-6
+    *The Lancet Infectious Diseases, 9*(5), 291-300. https://doi.org/10.1016/S1473-3099(09)70069-6
   doi: 10.1016/S1473-3099(09)70069-6
   status: partial
   verified_on: 2026-10-22
@@ -429,7 +429,7 @@ carrat_2008:
   apa: >-
     Carrat, F., Vergu, E., Ferguson, N. M., Lemaitre, M., Cauchemez, S., & Leach, S. (2008). Time
     lines of infection and disease in human influenza: A review of volunteer challenge studies.
-    *American Journal of Epidemiology*, *167*(7), 775-785. https://doi.org/10.1093/aje/kwm375
+    *American Journal of Epidemiology, 167*(7), 775-785. https://doi.org/10.1093/aje/kwm375
   doi: 10.1093/aje/kwm375
   status: partial
   verified_on: 2026-10-22
@@ -446,7 +446,7 @@ park_2020:
   aliases: []
   apa: >-
     Park, M., Cook, A. R., Lim, J. T., Sun, Y., & Dickens, B. L. (2020). A systematic review of
-    COVID-19 epidemiology based on current evidence. *Journal of Clinical Medicine*, *9*(4),
+    COVID-19 epidemiology based on current evidence. *Journal of Clinical Medicine, 9*(4),
     Article 967. https://doi.org/10.3390/jcm9040967
   doi: 10.3390/jcm9040967
   status: partial
@@ -464,7 +464,7 @@ alimohamadi_2020:
   apa: >-
     Alimohamadi, Y., Taghdir, M., & Sepandi, M. (2020). Estimate of the basic reproduction number
     for COVID-19: A systematic review and meta-analysis. *Journal of Preventive Medicine and
-    Public Health*, *53*(4), 227-234. https://doi.org/10.3961/jpmph.20.076
+    Public Health, 53*(4), 227-234. https://doi.org/10.3961/jpmph.20.076
   doi: 10.3961/jpmph.20.076
   status: partial
   verified_on: 2026-10-22
@@ -480,7 +480,7 @@ xin_2022_latent:
   aliases: []
   apa: >-
     Xin, H., Li, Y., Wu, P., Li, Z., Lau, E. H. Y., et al. (2022). Estimating the latent period of
-    coronavirus disease 2019 (COVID-19). *Clinical Infectious Diseases*, *74*(9), 1678-1684.
+    coronavirus disease 2019 (COVID-19). *Clinical Infectious Diseases, 74*(9), 1678-1684.
     https://doi.org/10.1093/cid/ciab746
   doi: 10.1093/cid/ciab746
   status: partial
@@ -499,7 +499,7 @@ van_kampen_2021:
   apa: >-
     van Kampen, J. J. A., van de Vijver, D. A. M. C., Fraaij, P. L. A., Haagmans, B. L., Lamers,
     M. M., Okba, N., et al. (2021). Duration and key determinants of infectious virus shedding in
-    hospitalized patients with coronavirus disease-2019 (COVID-19). *Nature Communications*, *12*,
+    hospitalized patients with coronavirus disease-2019 (COVID-19). *Nature Communications, 12*,
     Article 267. https://doi.org/10.1038/s41467-020-20568-4
   doi: 10.1038/s41467-020-20568-4
   status: partial
@@ -518,7 +518,7 @@ guerra_2017:
   apa: >-
     Guerra, F. M., Bolotin, S., Lim, G., Heffernan, J., Deeks, S. L., Li, Y., & Crowcroft, N. S.
     (2017). The basic reproduction number (R0) of measles: A systematic review. *The Lancet
-    Infectious Diseases*, *17*(12), e420-e428. https://doi.org/10.1016/S1473-3099(17)30307-9
+    Infectious Diseases, 17*(12), e420-e428. https://doi.org/10.1016/S1473-3099(17)30307-9
   doi: 10.1016/S1473-3099(17)30307-9
   status: partial
   verified_on: 2026-10-22
@@ -533,6 +533,8 @@ cdc_2025_measles:
   year: 2025
   short: CDC (2025)
   aliases:
+    - CDC (2025)
+    - CDC
     - Centers for Disease Control and Prevention (2025)
     - U.S. CDC (2025)
   apa: >-
