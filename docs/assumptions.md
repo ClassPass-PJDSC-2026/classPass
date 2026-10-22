@@ -4,7 +4,7 @@ Every number the simulator uses lives in [`params.yaml`](../params.yaml). This p
 
 Results are **relative scenario comparisons, not forecasts**. A wide range is not a weakness: the sensitivity analysis varies every uncertain input across its range and reports whether the recommendation still holds.
 
-**Default disease:** seasonal influenza. Other diseases are handled by calibrated R₀ mode (ticket #25).
+**Default disease:** seasonal influenza. Other diseases are handled by calibrated R₀ mode (ticket #23).
 
 ## Parameter table
 
@@ -71,13 +71,39 @@ Results are **relative scenario comparisons, not forecasts**. A wide range is no
 
 **`attack_rate_threshold`, `robustness_threshold`.** Policy choices for the recommender. The user can change the attack-rate threshold in the app.
 
+## Calibrated R₀ mode
+
+Physical mode (the default) takes the quanta rate as given and computes transmission from room properties. Calibrated R₀ mode inverts that: the user names a target R₀ for the baseline school, and the model solves for the quanta rate that reproduces it.
+
+**Calibration is a modelling convenience, not a measurement.** It converts a literature-reported R₀ into a quanta rate that is self-consistent with the rest of the model's parameters. It does not make that quanta rate a better estimate of reality than the physical-mode default; it anchors the simulation to a quantity (R₀) with stronger empirical support than the quanta rate alone — particularly for influenza, where published quanta estimates span three orders of magnitude (see above).
+
+Calibration solves:
+
+    q* = (R0 · γ − β_comm) · (7 / school_days) · Q / (n · a · p · t · mf)
+
+where γ = 1 / infectious_days, β_comm = community_beta, Q = airflow, n = class_size, a = infectious_attendance, p = breathing_rate, t = session_hours, mf = mask_factor. This is the unique q such that the baseline (face-to-face, 5 school days/week) reproduces the target R₀. Calibration succeeds only when target R₀ strictly exceeds the community-only R₀ = community_beta / γ; below that, classroom transmission cannot reduce total R₀ further and the mode reports an error.
+
+After calibration, the quanta rate is fixed: ventilation, masks, class size and modality still change transmission from the calibrated baseline. Doubling ACH halves classroom β; doubling class size doubles it. This is what makes calibrated mode usable for scenario comparison — the R₀ anchor sets the scale, and physical interventions still move it.
+
+### Disease presets
+
+Presets set R₀, latent days and infectious days for a named disease. **THE PRESET VALUES BELOW ARE PLACEHOLDERS PENDING PRIMARY SOURCES**; the R₀ ranges are commonly cited figures, and the latent/infectious periods are order-of-magnitude estimates. They will be replaced once the reference lookups (C2) are complete. Custom R₀ accepts any value in 0.5–20 and uses the base (influenza) periods.
+
+| Preset | R₀ (range) | Latent days (range) | Infectious days (range) |
+|---|---|---|---|
+| Influenza | 1.3 (1.0–2.0) | 1.0 (0.5–2.0) | 4.8 (3.5–7.0) |
+| COVID-19 | 3.0 (2.5–3.5) | 3.0 (2.0–5.0) | 7.0 (5.0–10.0) |
+| Measles | 15.0 (12.0–18.0) | 10.0 (7.0–14.0) | 7.0 (4.0–9.0) |
+
+In calibrated mode, the sensitivity analysis varies R₀ across the preset's range (via the calibrated quanta rate) rather than varying quanta directly. This is the reason calibrated mode is the safer default for scenario comparison: the R₀ uncertainty is what enters sensitivity, not the quanta uncertainty.
+
 ## Where sources disagree
 
 **Influenza quanta span more than three orders of magnitude.**
 - Rudnick and Milton (2003): about 15–128 quanta/h (airliner outbreak), within a published range of about 15–500 quanta/h (Azimi & Stephens, 2013).
 - Bueno de Mesquita et al. (2020): 0.11 quanta/h (95% CI 0.088–0.12) from a controlled human challenge trial.
 
-Outbreak-based estimates come from events where transmission happened, so they skew high. The challenge-trial estimate comes from volunteers in a controlled room, and the authors note that a minority of "supershedders" may pose great risk even in well-ventilated spaces, so a single low figure understates the tail. We use the outbreak-based range (5–128) because the tool models a school outbreak, and we exclude 0.11 and 500 as extremes. **Calibrated R₀ mode (#25) is the safer default for comparing scenarios, because it does not depend on picking one quanta value.**
+Outbreak-based estimates come from events where transmission happened, so they skew high. The challenge-trial estimate comes from volunteers in a controlled room, and the authors note that a minority of "supershedders" may pose great risk even in well-ventilated spaces, so a single low figure understates the tail. We use the outbreak-based range (5–128) because the tool models a school outbreak, and we exclude 0.11 and 500 as extremes. **Calibrated R₀ mode (#23) is the safer default for comparing scenarios, because it does not depend on picking one quanta value.**
 
 **Masks and influenza aerosols.** Leung et al. (2020) showed an effect for influenza droplets but not for influenza aerosols, so mask benefits in this model may be overstated at the upper bound of `mask_efficiency`.
 
