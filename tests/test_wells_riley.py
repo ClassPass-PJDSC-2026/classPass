@@ -251,7 +251,7 @@ DECREASING = [
 
 
 def _strictly(values, up: bool) -> bool:
-    pairs = zip(values, values[1:])
+    pairs = list(zip(values, values[1:], strict=False))
     return all(a < b for a, b in pairs) if up else all(a > b for a, b in pairs)
 
 
