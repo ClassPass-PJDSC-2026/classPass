@@ -87,13 +87,23 @@ After calibration, the quanta rate is fixed: ventilation, masks, class size and 
 
 ### Disease presets
 
-Presets set R₀, latent days and infectious days for a named disease. **THE PRESET VALUES BELOW ARE PLACEHOLDERS PENDING PRIMARY SOURCES**; the R₀ ranges are commonly cited figures, and the latent/infectious periods are order-of-magnitude estimates. They will be replaced once the reference lookups (C2) are complete. Custom R₀ accepts any value in 0.5–20 and uses the base (influenza) periods.
+Presets set R₀, latent days and infectious days for a named disease. Values come from primary literature; derivations and confidence labels are in [`references.yaml`](../references.yaml) and summarised below.
 
-| Preset | R₀ (range) | Latent days (range) | Infectious days (range) |
-|---|---|---|---|
-| Influenza | 1.3 (1.0–2.0) | 1.0 (0.5–2.0) | 4.8 (3.5–7.0) |
-| COVID-19 | 3.0 (2.5–3.5) | 3.0 (2.0–5.0) | 7.0 (5.0–10.0) |
-| Measles | 15.0 (12.0–18.0) | 10.0 (7.0–14.0) | 7.0 (4.0–9.0) |
+| Preset | R₀ (range) | Latent days (range) | Infectious days (range) | Confidence |
+|---|---|---|---|---|
+| Influenza | 1.3 (1.1–1.6) | 1.0 (0.5–2.0) | 4.0 (3.0–6.0) | medium |
+| COVID-19 (ancestral) | 2.9 (2.0–3.5) | 5.5 (3.5–6.0) | 8.0 (5.0–10.0) | medium |
+| Measles | 15.0 (12.0–18.0) | 9.0 (7.0–11.0) | 8.0 (7.0–9.0) | high (infectious); medium (latent, R₀) |
+
+**Latent period definition and derivations.** `latent_days` is 1/σ — exposure to onset of infectiousness. Some sources report the *incubation period* (exposure → symptom onset), which is systematically longer; where a preset value is derived rather than directly estimated, the derivation is stated.
+
+- **Influenza (1.0 d).** Derived from Lessler et al.'s median incubation 1.4 d and Carrat et al.'s observation that viral shedding, and hence infectiousness, begins 0.5–1 d after challenge, before symptom onset. Range 0.5–2.0 covers the incubation CI and challenge-study timing.
+- **COVID-19 ancestral (5.5 d).** Directly estimated by Xin et al. (2022) from exposure-traced cases; shorter than the corresponding incubation estimate of 6.9 d in the same data. **The preset is strain-specific:** Omicron latent is much shorter (~3.1 d), and Omicron R₀ is substantially higher. The preset pairs ancestral-strain R₀ with ancestral-strain latent so that the calibrated-quanta solution is internally consistent.
+- **Measles (9.0 d).** **Derived.** CDC guidance places rash ~14 d after exposure and infectiousness 4 d before rash onset, giving a latent period of ≈9 d; range 7–11 covers variation in prodrome-to-rash timing. The commonly quoted 10–14 d figure is *incubation*, not latent, and must not be entered as `latent_days`.
+
+**R₀ is setting-dependent.** The calibrated-R₀ mode assumes a fully susceptible classroom; population R₀ estimates (seasonal influenza, early-outbreak COVID-19, pre-vaccine-era measles) are population-level anchors, not classroom-specific. This is the correct interpretation of R₀ for the calibrated-quanta solve; the simulator presents *relative* scenario comparisons, not classroom-specific forecasts. For measles, Guerra et al. (2017) note that rigorous estimates vary more than the classic 12–18 range; the preset retains 12–18 as the operational range and should be treated as convention, not a measured constant.
+
+**Omicron is not included.** The current source set supports an Omicron R₀ (pooled effective R 4.20, 95% CI 2.05–6.35) and Omicron latent period (~3.1 d for BA.1.1), but not an Omicron-specific infectious period. Borrowing the ancestral 8-day value would understate γ, and therefore understate the calibrated quanta rate and the resulting infection probability — an optimism we do not want in a decision-support tool. An Omicron preset would be added once an Omicron-specific infectious-period estimate is available.
 
 In calibrated mode, the sensitivity analysis varies R₀ across the preset's range (via the calibrated quanta rate) rather than varying quanta directly. This is the reason calibrated mode is the safer default for scenario comparison: the R₀ uncertainty is what enters sensitivity, not the quanta uncertainty.
 
@@ -169,3 +179,4 @@ Every reference carries a `status`, the date it was checked, and where, in `refe
 
 - **verified:** Wells (1955), Riley et al. (1978), Rudnick & Milton (2003), Azimi & Stephens (2013), Azimi et al. (2020), Bueno de Mesquita et al. (2020), Carrat et al. (2008), Leung et al. (2020), Keeling & Rohani (2008), McKay et al. (1979), Virtanen et al. (2020), McKinney (2010), U.S. EPA (2011), Harvard Healthy Buildings Program (2020), PSA (2024), and the news and policy sources used in the proposal background.
 - **partial:** PSA enrollment table (update date still to copy), DepEd (2017) and DepEd (2010) (specific values read on secondary sites; confirm in the DepEd copy).
+- **partial (waiting for C2 and PM to confirm) (preset references, 2026-10-22):** Biggerstaff et al. (2014), Lessler et al. (2009), Carrat et al. (2008), Park et al. (2020), Alimohamadi et al. (2020), Xin et al. (2022), van Kampen et al. (2021), Guerra et al. (2017), CDC (2025).

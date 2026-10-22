@@ -247,7 +247,7 @@ def render_sidebar(
             sb.caption(
                 f"R0 = {p.r0:.2f} (preset range {p.r0_min:.2f}–{p.r0_max:.2f}); "
                 f"latent {p.latent_days:.1f} d, infectious {p.infectious_days:.1f} d. "
-                f"Preset values are placeholders pending a primary source."
+                f"Values from primary literature; see docs/assumptions.md for derivations."
             )
             
     sb.header("School profile")
