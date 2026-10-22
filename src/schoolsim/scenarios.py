@@ -20,7 +20,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, fields, replace
 
-from .seir import SimResult, simulate
+from .seir import SimResult, r0_effective, simulate
 from .wells_riley import airflow, classroom_beta, mask_factor, room_volume
 
 __all__ = [
@@ -176,7 +176,7 @@ def run_scenario(
         mask=mf,
         infectious_attendance=values["infectious_attendance"],
     )
-    return simulate(
+    result = simulate(
         beta_class=beta_class,
         community_beta=values["community_beta"],
         sigma=1.0 / values["latent_days"],
@@ -185,6 +185,16 @@ def run_scenario(
         initial_infected_frac=values["initial_infected_frac"],
         sim_days=int(values["sim_days"]),
         school_days_per_week=int(values["school_days_per_week"]),
+    )
+    return replace(
+        result,
+        r0_effective=r0_effective(
+            beta_class=beta_class,
+            community_beta=values["community_beta"],
+            gamma=1.0 / values["infectious_days"],
+            attendance=attendance,
+            school_days_per_week=int(values["school_days_per_week"]),
+        ),
     )
 
 
