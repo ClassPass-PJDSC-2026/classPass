@@ -52,15 +52,21 @@ Alphabetical, with a hanging indent in the final document. Open `docs/references
 
 Abrigo, M. R. M., Perez, T. D. S., Quejada, N. A. M., Daga, E. D. J. C., Estopace, K. M., Lingatong, E. E., Relos, C. M. L., Paquibot, J. L., & Gavan, D. S. A. (2025). *Low fertility, ageing buildings, and school congestion in the Philippines: Tailwinds, headwinds, and some policy options* (PIDS Discussion Paper No. 2025-10). Philippine Institute for Development Studies. https://doi.org/10.62986/dp2025.10
 
+Alimohamadi, Y., Taghdir, M., & Sepandi, M. (2020). Estimate of the basic reproduction number for COVID-19: A systematic review and meta-analysis. *Journal of Preventive Medicine and Public Health*, *53*(4), 227-234. https://doi.org/10.3961/jpmph.20.076
+
 Azimi, P., Keshavarz, Z., Cedeno Laurent, J. G., & Allen, J. G. (2020). Estimating the nationwide transmission risk of measles in US schools and impacts of vaccination and supplemental infection control strategies. *BMC Infectious Diseases, 20*, Article 497. https://doi.org/10.1186/s12879-020-05200-6
 
 Azimi, P., & Stephens, B. (2013). HVAC filtration for controlling infectious airborne disease transmission in indoor environments: Predicting risk reductions and operational costs. *Building and Environment, 70*, 150–160. https://doi.org/10.1016/j.buildenv.2013.08.025
+
+Biggerstaff, M., Cauchemez, S., Reed, C., Gambhir, M., & Finelli, L. (2014). Estimates of the reproduction number for seasonal, pandemic, and zoonotic influenza: A systematic review of the literature. *BMC Infectious Diseases*, *14*, Article 480. https://doi.org/10.1186/1471-2334-14-480
 
 Bueno de Mesquita, P. J., Noakes, C. J., & Milton, D. K. (2020). Quantitative aerobiologic analysis of an influenza human challenge-transmission trial. *Indoor Air, 30*(6), 1189–1198. https://doi.org/10.1111/ina.12701
 
 Cariaso, B. (2026, July 25). DepEd still faces backlog of 166,000 classrooms. *The Philippine Star*. https://www.philstar.com/headlines/2026/07/25/2544543/deped-still-faces-backlog-166000-classrooms
 
-Carrat, F., Vergu, E., Ferguson, N. M., Lemaitre, M., Cauchemez, S., Leach, S., & Valleron, A.-J. (2008). Time lines of infection and disease in human influenza: A review of volunteer challenge studies. *American Journal of Epidemiology, 167*(7), 775–785. https://doi.org/10.1093/aje/kwm375
+Carrat, F., Vergu, E., Ferguson, N. M., Lemaitre, M., Cauchemez, S., & Leach, S. (2008). Time lines of infection and disease in human influenza: A review of volunteer challenge studies. *American Journal of Epidemiology*, *167*(7), 775-785. https://doi.org/10.1093/aje/kwm375
+
+Centers for Disease Control and Prevention. (2025). Measles (rubeola). In *CDC Yellow Book 2026: Travel-associated infections and diseases*. U.S. Department of Health and Human Services. https://www.cdc.gov/yellow-book/hcp/travel-associated-infections-diseases/measles-rubeola.html
 
 Data Privacy Act of 2012, Republic Act No. 10173 (2012) (Phil.). https://privacy.gov.ph/wp-content/uploads/2017/03/DPA-of-2012.pdf
 
@@ -70,15 +76,21 @@ Department of Education. (2017). *Establishing the minimum performance standards
 
 DepEd projects up to 28M enrollees. (2026, May 31). *Daily Tribune*. https://tribune.net.ph/2026/05/31/deped-projects-up-to-28m-enrollees
 
+Guerra, F. M., Bolotin, S., Lim, G., Heffernan, J., Deeks, S. L., Li, Y., & Crowcroft, N. S. (2017). The basic reproduction number (R0) of measles: A systematic review. *The Lancet Infectious Diseases*, *17*(12), e420-e428. https://doi.org/10.1016/S1473-3099(17)30307-9
+
 Harvard T.H. Chan School of Public Health Healthy Buildings Program. (2020). *Risk reduction strategies for reopening schools* [Report]. https://healthybuildings.hsph.harvard.edu/research/schools/risk-reduction-strategies-for-reopening-schools/healthy-buildings
 
 Keeling, M. J., & Rohani, P. (2008). *Modeling infectious diseases in humans and animals*. Princeton University Press.
+
+Lessler, J., Reich, N. G., Brookmeyer, R., Perl, T. M., Nelson, K. E., & Cummings, D. A. T. (2009). Incubation periods of acute respiratory viral infections: A systematic review. *The Lancet Infectious Diseases*, *9*(5), 291-300. https://doi.org/10.1016/S1473-3099(09)70069-6
 
 Leung, N. H. L., Chu, D. K. W., Shiu, E. Y. C., Chan, K.-H., McDevitt, J. J., Hau, B. J. P., Yen, H.-L., Li, Y., Ip, D. K. M., Peiris, J. S. M., Seto, W.-H., Leung, G. M., Milton, D. K., & Cowling, B. J. (2020). Respiratory virus shedding in exhaled breath and efficacy of face masks. *Nature Medicine, 26*(5), 676–680. https://doi.org/10.1038/s41591-020-0843-2
 
 McKay, M. D., Beckman, R. J., & Conover, W. J. (1979). A comparison of three methods for selecting values of input variables in the analysis of output from a computer code. *Technometrics, 21*(2), 239–245.
 
 McKinney, W. (2010). Data structures for statistical computing in Python. In S. van der Walt & J. Millman (Eds.), *Proceedings of the 9th Python in Science Conference* (pp. 56–61). https://doi.org/10.25080/Majora-92bf1922-00a
+
+Park, M., Cook, A. R., Lim, J. T., Sun, Y., & Dickens, B. L. (2020). A systematic review of COVID-19 epidemiology based on current evidence. *Journal of Clinical Medicine*, *9*(4), Article 967. https://doi.org/10.3390/jcm9040967
 
 Philippine News Agency. (2025, October 15). DOH: No outbreak of influenza-like illnesses. *SunStar*. https://www.sunstar.com.ph/manila/doh-no-outbreak-of-influenza-like-illnesses
 
@@ -92,9 +104,13 @@ Rudnick, S. N., & Milton, D. K. (2003). Risk of indoor airborne infection transm
 
 U.S. Environmental Protection Agency. (2011). Chapter 6: Inhalation rates. In *Exposure factors handbook: 2011 edition* (EPA/600/R-09/052F). https://www.epa.gov/expobox/exposure-factors-handbook-chapter-6
 
+van Kampen, J. J. A., van de Vijver, D. A. M. C., Fraaij, P. L. A., Haagmans, B. L., Lamers, M. M., Okba, N., et al. (2021). Duration and key determinants of infectious virus shedding in hospitalized patients with coronavirus disease-2019 (COVID-19). *Nature Communications*, *12*, Article 267. https://doi.org/10.1038/s41467-020-20568-4
+
 Virtanen, P., Gommers, R., Oliphant, T. E., Haberland, M., Reddy, T., Cournapeau, D., Burovski, E., Peterson, P., Weckesser, W., Bright, J., van der Walt, S. J., Brett, M., Wilson, J., Millman, K. J., Mayorov, N., Nelson, A. R. J., Jones, E., Kern, R., Larson, E., . . . SciPy 1.0 Contributors. (2020). SciPy 1.0: Fundamental algorithms for scientific computing in Python. *Nature Methods, 17*(3), 261–272. https://doi.org/10.1038/s41592-019-0686-2
 
 Wells, W. F. (1955). *Airborne contagion and air hygiene: An ecological study of droplet infections*. Harvard University Press.
+
+Xin, H., Li, Y., Wu, P., Li, Z., Lau, E. H. Y., et al. (2022). Estimating the latent period of coronavirus disease 2019 (COVID-19). *Clinical Infectious Diseases*, *74*(9), 1678-1684. https://doi.org/10.1093/cid/ciab746
 
 <!-- REFERENCES:END -->
 
