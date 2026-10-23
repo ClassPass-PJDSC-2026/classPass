@@ -12,3 +12,4 @@ htmlcov/
 .ipynb_checkpoints/
 .DS_Store
 .env
+.venv-check/
