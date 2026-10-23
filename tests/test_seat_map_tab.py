@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import sys
-import types
 from types import SimpleNamespace
 
 import numpy as np
@@ -11,7 +9,7 @@ import pytest
 import seat_map_tab as sm
 from theme import COMPARTMENT_COLORS
 
-from schoolsim import _stub_spatial as sp
+from schoolsim import spatial as sp
 from schoolsim.params import load_params
 from schoolsim.seating import seat_labels
 
@@ -24,29 +22,6 @@ def setup_room(n=42, length=9.0, width=7.0, infected=()):
     idx = [labels.index(s) for s in infected]
     risk = sp.risk_map(seats, idx, q=15.0, p=0.5, t=6.0, Q=680.0, mask=1.0)
     return seats, labels, risk
-
-
-# --- model selection -----------------------------------------------------------------------
-
-def test_placeholder_model_is_used_when_the_real_one_is_absent(monkeypatch):
-    monkeypatch.setitem(sys.modules, "schoolsim.spatial", None)
-    model, placeholder = sm.get_spatial()
-    assert placeholder is True and model.risk_map is sp.risk_map
-
-
-def test_real_model_is_used_when_it_exists(monkeypatch):
-    mod = types.ModuleType("schoolsim.spatial")
-    mod.seat_grid = mod.risk_map = mod.expected_cases = lambda *a, **k: None
-    monkeypatch.setitem(sys.modules, "schoolsim.spatial", mod)
-    model, placeholder = sm.get_spatial()
-    assert placeholder is False and model.seat_grid is mod.seat_grid
-
-
-def test_incomplete_real_model_falls_back(monkeypatch):
-    mod = types.ModuleType("schoolsim.spatial")
-    mod.seat_grid = lambda *a, **k: None  # no risk_map or expected_cases
-    monkeypatch.setitem(sys.modules, "schoolsim.spatial", mod)
-    assert sm.get_spatial()[1] is True
 
 
 # --- heuristic settings ----------------------------------------------------------------------

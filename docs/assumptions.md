@@ -71,6 +71,58 @@ Results are **relative scenario comparisons, not forecasts**. A wide range is no
 
 **`attack_rate_threshold`, `robustness_threshold`.** Policy choices for the recommender. The user can change the attack-rate threshold in the app.
 
+## Regional presets (`scripts/make_presets.py`, ticket #8)
+
+Regional defaults for class size and school size are built from three raw tables (provenance in [`data/README.md`](../data/README.md)) and written to `data/processed/presets.csv`. They are starting values that the user can override in the sidebar.
+
+**How they are computed.** The three tables are standardised to canonical region and level names and merged on (region, level):
+
+- `learners_per_classroom` = enrollment ÷ classrooms
+- `learners_per_school` = enrollment ÷ schools
+
+Elementary, JHS and SHS are the levels used. Rows missing any of enrollment, schools or classrooms are logged and left out of the output, never silently dropped, and the app falls back to its defaults for those combinations. Values outside 15–100 learners per classroom are flagged in the log as a sanity check.
+
+**Sources.**
+
+| Table | Source | School year |
+|---|---|---|
+| Enrollment (public; Elementary, JHS, SHS) | DepEd Learner Information System, via TeacherPH (`psa_enrollment.csv`) | 2020-2021 |
+| Schools (public) | PSA OpenSTAT Table 10.10 (DepEd data) | 2020-2021 |
+| Classrooms (public) | DepEd National School Building Inventory, via TeacherPH | 2019-2020 |
+
+**Region names.** Names have changed over time, so every source label is mapped to one canonical label. The canonical labels match those the app already uses (sidebar and placeholder presets). Old or alternative spellings are accepted as aliases.
+
+| Canonical label | Also accepted |
+|---|---|
+| NCR | National Capital Region, Metro Manila |
+| CAR | Cordillera Administrative Region, Cordillera |
+| Ilocos Region | Region I, Region 1 |
+| Cagayan Valley | Region II, Region 2 |
+| Central Luzon | Region III, Region 3 |
+| CALABARZON | Region IV-A, Region 4A |
+| MIMAROPA | Region IV-B, Region 4B, MIMAROPA Region |
+| Bicol Region | Region V, Region 5 |
+| Western Visayas | Region VI, Region 6 |
+| Central Visayas | Region VII, Region 7 |
+| NIR | Negros Island Region |
+| Eastern Visayas | Region VIII, Region 8 |
+| Zamboanga Peninsula | Region IX, Region 9 |
+| Northern Mindanao | Region X, Region 10 |
+| Davao Region | Region XI, Region 11 |
+| SOCCSKSARGEN | Region XII, Region 12 |
+| CARAGA | Region XIII, Region 13 |
+| BARMM | ARMM, Autonomous Region in Muslim Mindanao, Bangsamoro Autonomous Region in Muslim Mindanao |
+
+ARMM is treated as BARMM (renamed in 2019). Source labels that match no entry, such as national totals, are dropped and logged. The mapping lives in `REGION_ALIASES` in `src/schoolsim/presets_build.py`, and a test checks that every region in the app's placeholder table is a canonical label. All 17 regions in the three raw files match an entry above. NIR does not appear in any source.
+
+**Limitations specific to presets.**
+
+- **Learners per classroom is not class size.** Where schools run shifts, the same classroom serves more than one group per day, so learners per classroom overstates the number of students in a room at once. Treat the preset as a starting point and override it in the sidebar.
+- **Regional averages hide the spread.** A regional figure says nothing about the crowded or sparse schools within the region.
+- **Incomplete combinations.** Any region and level that is missing from one of the three sources has no preset, and the app uses the default class size for it.
+- **Secondary source, hand-copied.** Enrollment and classroom counts were copied from TeacherPH's republication of DepEd statistics, not from the DepEd files, and five rows of each were spot-checked (see `data/README.md`).
+- **Only 2019-2021 data.** The presets describe pre-2022 enrollment and buildings and do not reflect later changes.
+
 ## Calibrated R₀ mode
 
 Physical mode (the default) takes the quanta rate as given and computes transmission from room properties. Calibrated R₀ mode inverts that: the user names a target R₀ for the baseline school, and the model solves for the quanta rate that reproduces it.
@@ -156,6 +208,8 @@ Each scenario in `src/schoolsim/scenarios.py` applies one or more overrides to t
 - **Homogeneous mixing across the school.** SEIR treats all students as one population (Keeling & Rohani, 2008); it ignores grade levels, friend groups and households.
 - **Shedding as infectiousness.** Infectious period is approximated by viral shedding duration.
 - **Learners per classroom is not class size** where schools run shifts; presets are a starting point that users can override.
+- **Presets mix school years and definitions.** Enrollment, schools and classroom counts come from different school years, and "public" is defined slightly differently across the PSA tables (see "Regional presets").
+- **Regional averages only.** Presets are region-by-level averages. No per-school data is used.
 - **One disease at a time.** The default is influenza; other diseases rely on calibrated R₀ mode.
 
 ## Changes from the ticket's starting values
@@ -180,3 +234,9 @@ Every reference carries a `status`, the date it was checked, and where, in `refe
 - **verified:** Wells (1955), Riley et al. (1978), Rudnick & Milton (2003), Azimi & Stephens (2013), Azimi et al. (2020), Bueno de Mesquita et al. (2020), Carrat et al. (2008), Leung et al. (2020), Keeling & Rohani (2008), McKay et al. (1979), Virtanen et al. (2020), McKinney (2010), U.S. EPA (2011), Harvard Healthy Buildings Program (2020), PSA (2024), and the news and policy sources used in the proposal background.
 - **partial:** PSA enrollment table (update date still to copy), DepEd (2017) and DepEd (2010) (specific values read on secondary sites; confirm in the DepEd copy).
 - **partial (C2 reviewed and confirmed, 2026-10-23):** Biggerstaff et al. (2014), Lessler et al. (2009), Carrat et al. (2008), Park et al. (2020), Alimohamadi et al. (2020), Xin et al. (2022), van Kampen et al. (2021), Guerra et al. (2017), CDC (2025).
+- **partial:** DepEd (2017) and DepEd (2010) (specific values read on secondary sites; confirm in the DepEd copy). Regional enrollment and classroom counts come from TeacherPH's republication of DepEd statistics (see "Regional presets"), not from a primary DepEd file.
+- **partial (waiting for C2 and PM to confirm) (preset references, 2026-10-22):** Biggerstaff et al. (2014), Lessler et al. (2009), Carrat et al. (2008), Park et al. (2020), Alimohamadi et al. (2020), Xin et al. (2022), van Kampen et al. (2021), Guerra et al. (2017), CDC (2025).
+
+**Sensitivity sampling.** 
+
+Latin hypercube samples are uniform within each parameter's range, and log-uniform where `params.yaml` says so (`quanta_rate`). This is an assumption: the true distributions are unknown. `sim_days` and `school_days_per_week` are held at their base values in the Monte Carlo run.
