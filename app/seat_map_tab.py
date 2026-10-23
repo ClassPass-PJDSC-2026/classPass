@@ -1,7 +1,6 @@
 """Seat map tab (ticket #26b): place infected students and see who nearby is at risk.
 
-The seat-risk model is ``schoolsim.spatial`` (ticket #26a). Until that is merged this tab
-uses the placeholder in ``schoolsim._stub_spatial`` and says so on screen.
+The seat-risk model is ``schoolsim.spatial`` (ticket #26a).
 
 Shared state (other tabs, e.g. the teacher log in #28, can read or set these):
     st.session_state["index_seats"]   list of seat labels of infected students, e.g. ["B3"]
@@ -9,10 +8,8 @@ Shared state (other tabs, e.g. the teacher log in #28, can read or set these):
 
 from __future__ import annotations
 
-import importlib
 from collections.abc import Mapping
 from functools import partial
-from types import SimpleNamespace
 from typing import Any
 
 import numpy as np
@@ -20,6 +17,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from theme import COMPARTMENT_COLORS
 
+from schoolsim import spatial
 from schoolsim.params import Param
 from schoolsim.seating import (
     nearest_label,
@@ -37,18 +35,6 @@ HEURISTIC_DEFAULTS = {
 }
 CHART_WIDTH_PX = 700  # used only to size the seat markers
 CHART_HEIGHT_PX = 440
-
-
-def get_spatial() -> tuple[SimpleNamespace, bool]:
-    """``(model functions, is_placeholder)``: the real model if it is merged, else the stub."""
-    try:
-        mod = importlib.import_module("schoolsim.spatial")
-        return SimpleNamespace(seat_grid=mod.seat_grid, risk_map=mod.risk_map, expected_cases=mod.expected_cases), False
-    except (ImportError, AttributeError):
-        from schoolsim import _stub_spatial as mod
-
-        return SimpleNamespace(seat_grid=mod.seat_grid, risk_map=mod.risk_map, expected_cases=mod.expected_cases), True
-
 
 def heuristic_setting(params: Mapping[str, Param], key: str) -> tuple[float, float, float]:
     """``(value, min, max)`` for a heuristic setting, from params.yaml when present."""
@@ -194,7 +180,6 @@ def _pick(which: str, seats: np.ndarray, labels: list[str]) -> None:
 def render_seat_map(profile: Mapping[str, Any], values: Mapping[str, float], params: Mapping[str, Param]) -> None:
     """Draw the Seat map tab for the sidebar's school profile."""
     ss = st.session_state
-    spatial, is_placeholder = get_spatial()
 
     n, length_m, width_m = int(profile["class_size"]), float(profile["length_m"]), float(profile["width_m"])
     seats = spatial.seat_grid(n, length_m, width_m)
@@ -203,8 +188,6 @@ def render_seat_map(profile: Mapping[str, Any], values: Mapping[str, float], par
     ss["index_seats"] = [s for s in ss.get("index_seats", []) if s in labels]  # drop seats that no longer exist
 
     st.warning("The near-field effect is a heuristic. Use this map to compare seats, not to predict cases.")
-    if is_placeholder:
-        st.caption("Placeholder seat-risk model in use until the spatial model (#26a) is merged.")
     st.caption(
         "Click a seat to mark a student as infected, and click it again to undo. "
         "Change ventilation or masks in the sidebar and press Run simulation to see the risk change."

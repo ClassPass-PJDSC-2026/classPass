@@ -10,7 +10,7 @@ from notices import AI_DISCLOSURE, DATA_NOTICE, FOOTER_NOTICE
 from streamlit.testing.v1 import AppTest
 
 from schoolsim import _stub_engine as stub
-from schoolsim import _stub_spatial as sp
+from schoolsim import spatial as sp
 from schoolsim.engine import DISRUPTION_ORDER
 from schoolsim.seating import seat_labels
 
@@ -20,7 +20,6 @@ APP = str(Path(__file__).resolve().parents[1] / "app" / "streamlit_app.py")
 @pytest.fixture(autouse=True)
 def placeholder_models(monkeypatch):
     monkeypatch.setitem(sys.modules, "schoolsim.scenarios", None)
-    monkeypatch.setitem(sys.modules, "schoolsim.spatial", None)
 
 
 def start() -> AppTest:
@@ -172,8 +171,8 @@ def test_seats_that_no_longer_exist_are_dropped_when_the_class_shrinks():
     assert "E1" not in at.session_state["index_seats"]
 
 
-def test_seat_map_names_its_placeholder_model():
-    assert any("Placeholder seat-risk model" in c.value for c in seat_tab(start()).caption)
+def test_seat_map_uses_the_real_spatial_model():
+    assert not any("Placeholder seat-risk model" in c.value for c in seat_tab(start()).caption)
 
 
 def test_near_field_sliders_are_labelled_as_assumptions():
