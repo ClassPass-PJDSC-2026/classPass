@@ -99,6 +99,7 @@ class SimResult:
     peak_infectious: float
     peak_day: int
     cumulative_infections: float
+    r0_effective: float | None = None
 
 
 # ---------------------------------------------------------------------------

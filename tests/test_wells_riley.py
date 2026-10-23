@@ -225,3 +225,78 @@ def test_better_ventilation_lowers_attack_rate():
 
 def test_masks_lower_attack_rate():
     assert _attack_rate(ach=4, mask=mask_factor(0.9, 0.9)) < _attack_rate(ach=4)
+
+# ---------------------------------------------------------------------------
+# Monotonicity sweeps (parametrised)
+# ---------------------------------------------------------------------------
+
+P_BASE = dict(
+    n_infectors=1.0, quanta_rate=15.0, breathing_rate=0.5,
+    session_hours=6.0, airflow_m3h=567.0, mask=1.0,
+)
+B_BASE = dict(
+    class_size=30.0, quanta_rate=15.0, breathing_rate=0.5,
+    session_hours=6.0, airflow_m3h=567.0, mask=1.0, infectious_attendance=1.0,
+)
+
+INCREASING = [
+    ("quanta_rate", (1.0, 15.0, 50.0)),
+    ("breathing_rate", (0.3, 0.5, 0.8)),
+    ("session_hours", (1.0, 3.0, 6.0, 8.0)),
+]
+DECREASING = [
+    ("airflow_m3h", (100.0, 567.0, 2000.0)),
+    ("mask", (1.0, 0.5, 0.1, 0.0)),
+]
+
+
+def _strictly(values, up: bool) -> bool:
+    pairs = list(zip(values, values[1:], strict=False))
+    return all(a < b for a, b in pairs) if up else all(a > b for a, b in pairs)
+
+
+@pytest.mark.parametrize("name,sweep", INCREASING + [("n_infectors", (0.0, 1.0, 2.0, 5.0))])
+def test_probability_strictly_increasing(name, sweep):
+    out = [infection_probability(**{**P_BASE, name: v}) for v in sweep]
+    assert _strictly(out, up=True), (name, out)
+
+
+@pytest.mark.parametrize("name,sweep", DECREASING)
+def test_probability_strictly_decreasing(name, sweep):
+    out = [infection_probability(**{**P_BASE, name: v}) for v in sweep]
+    assert _strictly(out, up=False), (name, out)
+
+
+@pytest.mark.parametrize(
+    "name,sweep",
+    INCREASING + [("class_size", (10.0, 30.0, 50.0)), ("infectious_attendance", (0.1, 0.5, 1.0))],
+)
+def test_beta_strictly_increasing(name, sweep):
+    out = [classroom_beta(**{**B_BASE, name: v}) for v in sweep]
+    assert _strictly(out, up=True), (name, out)
+
+
+@pytest.mark.parametrize("name,sweep", DECREASING)
+def test_beta_strictly_decreasing(name, sweep):
+    out = [classroom_beta(**{**B_BASE, name: v}) for v in sweep]
+    assert _strictly(out, up=False), (name, out)
+
+
+@pytest.mark.parametrize("name,sweep", [("efficiency", (0.0, 0.3, 0.7, 1.0)), ("compliance", (0.0, 0.4, 1.0))])
+def test_mask_factor_strictly_decreasing(name, sweep):
+    other = "compliance" if name == "efficiency" else "efficiency"
+    out = [mask_factor(**{name: v, other: 1.0}) for v in sweep]
+    assert _strictly(out, up=False), (name, out)
+
+
+@pytest.mark.parametrize("quanta", [1.0, 15.0, 100.0])
+@pytest.mark.parametrize("q_air", [50.0, 567.0, 5000.0])
+@pytest.mark.parametrize("infectors", [0.0, 1.0, 5.0])
+def test_probability_stays_in_unit_interval(infectors, quanta, q_air):
+    p = infection_probability(infectors, quanta, 0.5, 6.0, q_air)
+    assert 0.0 <= p <= 1.0
+
+
+def test_beta_equals_n_times_attendance_times_neg_log_one_minus_p():
+    p_one = infection_probability(1, 15.0, 0.5, 6.0, 567.0)
+    assert classroom_beta(30, 15.0, 0.5, 6.0, 567.0) == pytest.approx(30 * -math.log(1.0 - p_one))

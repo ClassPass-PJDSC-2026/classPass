@@ -4,7 +4,7 @@ Every number the simulator uses lives in [`params.yaml`](../params.yaml). This p
 
 Results are **relative scenario comparisons, not forecasts**. A wide range is not a weakness: the sensitivity analysis varies every uncertain input across its range and reports whether the recommendation still holds.
 
-**Default disease:** seasonal influenza. Other diseases are handled by calibrated R₀ mode (ticket #25).
+**Default disease:** seasonal influenza. Other diseases are handled by calibrated R₀ mode (ticket #23).
 
 ## Parameter table
 
@@ -55,7 +55,7 @@ Results are **relative scenario comparisons, not forecasts**. A wide range is no
 
 **`initial_infected_frac`.** Share of students already infectious at the start of the simulation. Team assumption.
 
-**`class_size`.** The default is a team assumption; regional presets from `data/processed/presets.csv` replace it (see "Regional presets" below). National averages from DepEd data are 32 learners per classroom in elementary, 39 in junior high and 36 in senior high, but actual classes in many highly urbanized areas often exceed 50 ("DepEd Projects Up to 28M Enrollees," 2026). We did not find a DepEd standard for learners per classroom that we could read and cite, so none is used.
+**`class_size`.** The default is a team assumption; regional presets from `data/processed/presets.csv` replace it. National averages from DepEd data are 32 learners per classroom in elementary, 39 in junior high and 36 in senior high, but actual classes in many highly urbanized areas often exceed 50 ("DepEd Projects Up to 28M Enrollees," 2026). We did not find a DepEd standard for learners per classroom that we could read and cite, so none is used.
 
 **`room_length`, `room_width`.** DepEd's school-building standards give a classroom of 7.00 × 9.00 m measured from wall centres (DepEd, 2017). This was read on secondary sites; confirm it in the DepEd copy.
 
@@ -123,13 +123,49 @@ ARMM is treated as BARMM (renamed in 2019). Source labels that match no entry, s
 - **Secondary source, hand-copied.** Enrollment and classroom counts were copied from TeacherPH's republication of DepEd statistics, not from the DepEd files, and five rows of each were spot-checked (see `data/README.md`).
 - **Only 2019-2021 data.** The presets describe pre-2022 enrollment and buildings and do not reflect later changes.
 
+## Calibrated R₀ mode
+
+Physical mode (the default) takes the quanta rate as given and computes transmission from room properties. Calibrated R₀ mode inverts that: the user names a target R₀ for the baseline school, and the model solves for the quanta rate that reproduces it.
+
+**Calibration is a modelling convenience, not a measurement.** It converts a literature-reported R₀ into a quanta rate that is self-consistent with the rest of the model's parameters. It does not make that quanta rate a better estimate of reality than the physical-mode default; it anchors the simulation to a quantity (R₀) with stronger empirical support than the quanta rate alone — particularly for influenza, where published quanta estimates span three orders of magnitude (see above).
+
+Calibration solves:
+
+    q* = (R0 · γ − β_comm) · (7 / school_days) · Q / (n · a · p · t · mf)
+
+where γ = 1 / infectious_days, β_comm = community_beta, Q = airflow, n = class_size, a = infectious_attendance, p = breathing_rate, t = session_hours, mf = mask_factor. This is the unique q such that the baseline (face-to-face, 5 school days/week) reproduces the target R₀. Calibration succeeds only when target R₀ strictly exceeds the community-only R₀ = community_beta / γ; below that, classroom transmission cannot reduce total R₀ further and the mode reports an error.
+
+After calibration, the quanta rate is fixed: ventilation, masks, class size and modality still change transmission from the calibrated baseline. Doubling ACH halves classroom β; doubling class size doubles it. This is what makes calibrated mode usable for scenario comparison — the R₀ anchor sets the scale, and physical interventions still move it.
+
+### Disease presets
+
+Presets set R₀, latent days and infectious days for a named disease. Values come from primary literature; derivations and confidence labels are in [`references.yaml`](../references.yaml) and summarised below.
+
+| Preset | R₀ (range) | Latent days (range) | Infectious days (range) | Confidence |
+|---|---|---|---|---|
+| Influenza | 1.3 (1.1–1.6) | 1.0 (0.5–2.0) | 4.0 (3.0–6.0) | medium |
+| COVID-19 (ancestral) | 2.9 (2.0–3.5) | 5.5 (3.5–6.0) | 8.0 (5.0–10.0) | medium |
+| Measles | 15.0 (12.0–18.0) | 9.0 (7.0–11.0) | 8.0 (7.0–9.0) | high (infectious); medium (latent, R₀) |
+
+**Latent period definition and derivations.** `latent_days` is 1/σ — exposure to onset of infectiousness. Some sources report the *incubation period* (exposure → symptom onset), which is systematically longer; where a preset value is derived rather than directly estimated, the derivation is stated.
+
+- **Influenza (1.0 d).** Derived from Lessler et al.'s median incubation 1.4 d and Carrat et al.'s observation that viral shedding, and hence infectiousness, begins 0.5–1 d after challenge, before symptom onset. Range 0.5–2.0 covers the incubation CI and challenge-study timing.
+- **COVID-19 ancestral (5.5 d).** Directly estimated by Xin et al. (2022) from exposure-traced cases; shorter than the corresponding incubation estimate of 6.9 d in the same data. **The preset is strain-specific:** Omicron latent is much shorter (~3.1 d), and Omicron R₀ is substantially higher. The preset pairs ancestral-strain R₀ with ancestral-strain latent so that the calibrated-quanta solution is internally consistent.
+- **Measles (9.0 d).** **Derived.** CDC guidance places rash ~14 d after exposure and infectiousness 4 d before rash onset, giving a latent period of ≈9 d; range 7–11 covers variation in prodrome-to-rash timing. The commonly quoted 10–14 d figure is *incubation*, not latent, and must not be entered as `latent_days`.
+
+**R₀ is setting-dependent.** The calibrated-R₀ mode assumes a fully susceptible classroom; population R₀ estimates (seasonal influenza, early-outbreak COVID-19, pre-vaccine-era measles) are population-level anchors, not classroom-specific. This is the correct interpretation of R₀ for the calibrated-quanta solve; the simulator presents *relative* scenario comparisons, not classroom-specific forecasts. For measles, Guerra et al. (2017) note that rigorous estimates vary more than the classic 12–18 range; the preset retains 12–18 as the operational range and should be treated as convention, not a measured constant.
+
+**Omicron is not included.** The current source set supports an Omicron R₀ (pooled effective R 4.20, 95% CI 2.05–6.35) and Omicron latent period (~3.1 d for BA.1.1), but not an Omicron-specific infectious period. Borrowing the ancestral 8-day value would understate γ, and therefore understate the calibrated quanta rate and the resulting infection probability — an optimism we do not want in a decision-support tool. An Omicron preset would be added once an Omicron-specific infectious-period estimate is available.
+
+In calibrated mode, the sensitivity analysis varies R₀ across the preset's range (via the calibrated quanta rate) rather than varying quanta directly. This is the reason calibrated mode is the safer default for scenario comparison: the R₀ uncertainty is what enters sensitivity, not the quanta uncertainty.
+
 ## Where sources disagree
 
 **Influenza quanta span more than three orders of magnitude.**
 - Rudnick and Milton (2003): about 15–128 quanta/h (airliner outbreak), within a published range of about 15–500 quanta/h (Azimi & Stephens, 2013).
 - Bueno de Mesquita et al. (2020): 0.11 quanta/h (95% CI 0.088–0.12) from a controlled human challenge trial.
 
-Outbreak-based estimates come from events where transmission happened, so they skew high. The challenge-trial estimate comes from volunteers in a controlled room, and the authors note that a minority of "supershedders" may pose great risk even in well-ventilated spaces, so a single low figure understates the tail. We use the outbreak-based range (5–128) because the tool models a school outbreak, and we exclude 0.11 and 500 as extremes. **Calibrated R₀ mode (#25) is the safer default for comparing scenarios, because it does not depend on picking one quanta value.**
+Outbreak-based estimates come from events where transmission happened, so they skew high. The challenge-trial estimate comes from volunteers in a controlled room, and the authors note that a minority of "supershedders" may pose great risk even in well-ventilated spaces, so a single low figure understates the tail. We use the outbreak-based range (5–128) because the tool models a school outbreak, and we exclude 0.11 and 500 as extremes. **Calibrated R₀ mode (#23) is the safer default for comparing scenarios, because it does not depend on picking one quanta value.**
 
 **Masks and influenza aerosols.** Leung et al. (2020) showed an effect for influenza droplets but not for influenza aerosols, so mask benefits in this model may be overstated at the upper bound of `mask_efficiency`.
 
@@ -172,8 +208,6 @@ Each scenario in `src/schoolsim/scenarios.py` applies one or more overrides to t
 - **Homogeneous mixing across the school.** SEIR treats all students as one population (Keeling & Rohani, 2008); it ignores grade levels, friend groups and households.
 - **Shedding as infectiousness.** Infectious period is approximated by viral shedding duration.
 - **Learners per classroom is not class size** where schools run shifts; presets are a starting point that users can override.
-- **Different school years.** Enrollment (2020-2021) and schools (2020-2021) are one year later than classrooms (2019-2020). The output records `sy_enrollment` and `sy_classrooms`. Ratios mix years and can be off where enrollment or building stock changed quickly.
-- **"Public" is not defined the same way in every source.** The PSA public-school counts include State and Local Universities and Colleges (SUCs/LUCs), while the DepEd enrollment and classroom figures may not. The three tables may therefore not cover exactly the same institutions, which could explain small differences in school counts (for example NCR elementary 519 in PSA vs 516 on the TeacherPH page).
 - **Presets mix school years and definitions.** Enrollment, schools and classroom counts come from different school years, and "public" is defined slightly differently across the PSA tables (see "Regional presets").
 - **Regional averages only.** Presets are region-by-level averages. No per-school data is used.
 - **One disease at a time.** The default is influenza; other diseases rely on calibrated R₀ mode.
@@ -198,4 +232,5 @@ Each scenario in `src/schoolsim/scenarios.py` applies one or more overrides to t
 Every reference carries a `status`, the date it was checked, and where, in `references.yaml`. Statuses on 2026-10-21:
 
 - **verified:** Wells (1955), Riley et al. (1978), Rudnick & Milton (2003), Azimi & Stephens (2013), Azimi et al. (2020), Bueno de Mesquita et al. (2020), Carrat et al. (2008), Leung et al. (2020), Keeling & Rohani (2008), McKay et al. (1979), Virtanen et al. (2020), McKinney (2010), U.S. EPA (2011), Harvard Healthy Buildings Program (2020), PSA (2024), and the news and policy sources used in the proposal background.
-- **partial:** PSA enrollment table (update date still to copy), DepEd (2017) and DepEd (2010) (specific values read on secondary sites; confirm in the DepEd copy).
+- **partial:** DepEd (2017) and DepEd (2010) (specific values read on secondary sites; confirm in the DepEd copy). Regional enrollment and classroom counts come from TeacherPH's republication of DepEd statistics (see "Regional presets"), not from a primary DepEd file.
+- **partial (waiting for C2 and PM to confirm) (preset references, 2026-10-22):** Biggerstaff et al. (2014), Lessler et al. (2009), Carrat et al. (2008), Park et al. (2020), Alimohamadi et al. (2020), Xin et al. (2022), van Kampen et al. (2021), Guerra et al. (2017), CDC (2025).

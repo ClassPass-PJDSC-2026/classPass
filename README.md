@@ -1,6 +1,9 @@
 # classPass
 
 [![CI](https://github.com/labillescharlene21-lab/classPass/actions/workflows/ci.yml/badge.svg)](https://github.com/labillescharlene21-lab/classPass/actions/workflows/ci.yml)
+
+- [`notebooks/validation.ipynb`](notebooks/validation.ipynb) — model validation against analytic checks and published values
+
 ## Privacy and responsible use
 
 - The simulator works on **synthetic and aggregate inputs only** (class size, room size, ventilation). It does not need, and must not be given, real student records.

@@ -18,6 +18,7 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
+from schoolsim.calibrate import CUSTOM_R0_MAX, CUSTOM_R0_MIN, DISEASE_PRESETS
 from schoolsim.inputs import (
     VENTILATION_OPTIONS,
     clamp_int,
@@ -85,6 +86,18 @@ def _defaults(params: Mapping[str, Param], presets: pd.DataFrame) -> dict[str, A
     }
 
 
+def _mode_defaults() -> dict[str, Any]:
+    return {"mode": "Physical", "disease_preset": "influenza", "target_r0": 1.5}
+
+
+def _active_defaults() -> dict[str, Any]:
+    return {"active_mode": "Physical", "active_preset_key": "influenza", "active_target_r0": 1.5}
+
+
+def _preset_label(key: str) -> str:
+    return "Custom R0" if key == "custom" else DISEASE_PRESETS[key].name
+
+
 def init_state(params: Mapping[str, Param], presets: pd.DataFrame) -> None:
     """Create widget state on first load and repair any stale or out-of-range values."""
     ss = st.session_state
@@ -94,6 +107,18 @@ def init_state(params: Mapping[str, Param], presets: pd.DataFrame) -> None:
 
     for key, default in defaults.items():
         ss.setdefault(key, default)
+    for key, default in _mode_defaults().items():
+        ss.setdefault(key, default)
+    for key, default in _active_defaults().items():
+        ss.setdefault(key, default)
+
+    # Repair mode-related state (e.g. after a params/preset change).
+    if ss["mode"] not in ("Physical", "Calibrated"):
+        ss["mode"] = "Physical"
+    if ss["disease_preset"] not in (*DISEASE_PRESETS, "custom"):
+        ss["disease_preset"] = "influenza"
+    if not isinstance(ss["target_r0"], (int, float)) or not CUSTOM_R0_MIN <= ss["target_r0"] <= CUSTOM_R0_MAX:
+        ss["target_r0"] = 1.5
 
     # Repair values that would make a widget raise (e.g. after params.yaml ranges change).
     for key, (lo, hi) in limits.items():
@@ -157,8 +182,11 @@ def _handle_submit(params: Mapping[str, Param], presets: pd.DataFrame) -> None:
     errors, warnings = validate_inputs(profile, params)
     ss["profile_errors"] = errors
     ss["profile_warnings"] = warnings
-    if not errors:  # only valid profiles replace the one the engine runs on
+    if not errors:
         ss["profile"] = profile
+        ss["active_mode"] = ss["mode"]
+        ss["active_preset_key"] = ss["disease_preset"]
+        ss["active_target_r0"] = float(ss["target_r0"])
 
 
 # --- Rendering -------------------------------------------------------------------------
@@ -186,6 +214,42 @@ def render_sidebar(
     limits = _limits(params)
     tip = lambda key, **kw: describe_param(params[key], refs, **kw)  # noqa: E731
 
+    sb.header("Transmission mode")
+    sb.radio(
+        "Mode",
+        ["Physical", "Calibrated"],
+        key="mode",
+        horizontal=True,
+        help="Physical mode uses the quanta rate from params.yaml directly. Calibrated "
+        "mode solves for the quanta rate that reproduces a target R0 for the baseline "
+        "school; interventions still change transmission from that baseline.",
+    )
+    if st.session_state["mode"] == "Calibrated":
+        sb.selectbox(
+            "Disease preset",
+            [*DISEASE_PRESETS, "custom"],
+            key="disease_preset",
+            format_func=_preset_label,
+            help="Presets set R0, latent days and infectious days.",
+        )
+        if st.session_state["disease_preset"] == "custom":
+            sb.number_input(
+                "Target R0",
+                min_value=CUSTOM_R0_MIN,
+                max_value=CUSTOM_R0_MAX,
+                step=0.1,
+                format="%.1f",
+                key="target_r0",
+                help="R0 the baseline (face-to-face) school should reproduce.",
+            )
+        else:
+            p = DISEASE_PRESETS[st.session_state["disease_preset"]]
+            sb.caption(
+                f"R0 = {p.r0:.2f} (preset range {p.r0_min:.2f}–{p.r0_max:.2f}); "
+                f"latent {p.latent_days:.1f} d, infectious {p.infectious_days:.1f} d. "
+                f"Values from primary literature; see docs/assumptions.md for derivations."
+            )
+            
     sb.header("School profile")
 
     sb.selectbox(
