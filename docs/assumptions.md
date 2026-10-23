@@ -86,9 +86,9 @@ Elementary, JHS and SHS are the levels used. Rows missing any of enrollment, sch
 
 | Table | Source | School year |
 |---|---|---|
-| Enrollment (public; Elementary, JHS, SHS) | PSA OpenSTAT (DepEd data) | 2023-2024 |
-| Schools (public; all levels) | PSA (2024), OpenSTAT | 2022-2023 |
-| Classrooms | DepEd National School Building Inventory | <school year, once R3 is in> |
+| Enrollment (public; Elementary, JHS, SHS) | DepEd Learner Information System, via TeacherPH (`psa_enrollment.csv`) | 2020-2021 |
+| Schools (public) | PSA OpenSTAT Table 10.10 (DepEd data) | 2020-2021 |
+| Classrooms (public) | DepEd National School Building Inventory, via TeacherPH | 2019-2020 |
 
 **Region names.** Names have changed over time, so every source label is mapped to one canonical label. The canonical labels match those the app already uses (sidebar and placeholder presets). Old or alternative spellings are accepted as aliases.
 
@@ -113,15 +113,15 @@ Elementary, JHS and SHS are the levels used. Rows missing any of enrollment, sch
 | CARAGA | Region XIII, Region 13 |
 | BARMM | ARMM, Autonomous Region in Muslim Mindanao, Bangsamoro Autonomous Region in Muslim Mindanao |
 
-ARMM is treated as BARMM (renamed in 2019). Source labels that match no entry, such as national totals, are dropped and logged. The mapping lives in `REGION_ALIASES` in `src/schoolsim/presets_build.py`, and a test checks that every region in the app's placeholder table is a canonical label. <Update this table if the real run needs more aliases or if a source treats NIR differently.>
+ARMM is treated as BARMM (renamed in 2019). Source labels that match no entry, such as national totals, are dropped and logged. The mapping lives in `REGION_ALIASES` in `src/schoolsim/presets_build.py`, and a test checks that every region in the app's placeholder table is a canonical label. All 17 regions in the three raw files match an entry above. NIR does not appear in any source.
 
 **Limitations specific to presets.**
 
-- **Different school years.** Enrollment (2023-2024), schools (2022-2023) and classrooms (<SY>) are not from the same year. The output records `sy_enrollment` and `sy_classrooms`. Ratios mix years and can be off where enrollment or building stock changed quickly.
-- **"Public" is not defined the same way in every table.** The PSA public-school counts include State and Local Universities and Colleges (SUCs/LUCs). The enrollment table lists SUCs/LUCs as a separate type from Public, so enrollment (public only) and schools (public including SUCs/LUCs) do not cover exactly the same institutions.
 - **Learners per classroom is not class size.** Where schools run shifts, the same classroom serves more than one group per day, so learners per classroom overstates the number of students in a room at once. Treat the preset as a starting point and override it in the sidebar.
 - **Regional averages hide the spread.** A regional figure says nothing about the crowded or sparse schools within the region.
 - **Incomplete combinations.** Any region and level that is missing from one of the three sources has no preset, and the app uses the default class size for it.
+- **Secondary source, hand-copied.** Enrollment and classroom counts were copied from TeacherPH's republication of DepEd statistics, not from the DepEd files, and five rows of each were spot-checked (see `data/README.md`).
+- **Only 2019-2021 data.** The presets describe pre-2022 enrollment and buildings and do not reflect later changes.
 
 ## Where sources disagree
 
@@ -172,6 +172,8 @@ Each scenario in `src/schoolsim/scenarios.py` applies one or more overrides to t
 - **Homogeneous mixing across the school.** SEIR treats all students as one population (Keeling & Rohani, 2008); it ignores grade levels, friend groups and households.
 - **Shedding as infectiousness.** Infectious period is approximated by viral shedding duration.
 - **Learners per classroom is not class size** where schools run shifts; presets are a starting point that users can override.
+- **Different school years.** Enrollment (2020-2021) and schools (2020-2021) are one year later than classrooms (2019-2020). The output records `sy_enrollment` and `sy_classrooms`. Ratios mix years and can be off where enrollment or building stock changed quickly.
+- **"Public" is not defined the same way in every source.** The PSA public-school counts include State and Local Universities and Colleges (SUCs/LUCs), while the DepEd enrollment and classroom figures may not. The three tables may therefore not cover exactly the same institutions, which could explain small differences in school counts (for example NCR elementary 519 in PSA vs 516 on the TeacherPH page).
 - **Presets mix school years and definitions.** Enrollment, schools and classroom counts come from different school years, and "public" is defined slightly differently across the PSA tables (see "Regional presets").
 - **Regional averages only.** Presets are region-by-level averages. No per-school data is used.
 - **One disease at a time.** The default is influenza; other diseases rely on calibrated R₀ mode.

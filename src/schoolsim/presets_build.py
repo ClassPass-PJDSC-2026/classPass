@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 import re
+from pathlib import Path
 
 import pandas as pd
 
@@ -126,3 +127,35 @@ def sanity_check(presets: pd.DataFrame, low: float = 15.0, high: float = 100.0) 
             row.region, row.level, row.learners_per_classroom, low, high,
         )
     return flagged
+
+def load_wide(path: Path | str, sy: str, region_col: str = "Region") -> pd.DataFrame:
+    """Wide table (one column per level) -> tidy region / level / value / sy.
+
+    Used for the DepEd enrollment and classroom files. ``sy`` is the school year label.
+    """
+    raw = pd.read_csv(path)
+    long = raw.melt(id_vars=region_col, var_name="level", value_name="value")
+    long = long.rename(columns={region_col: "region"})
+    return long[["region", "level", "value"]].assign(sy=sy)
+
+
+def load_psa_schools(
+    path: Path | str, sy: str, *, skiprows: int = 2, encoding: str = "utf-8"
+) -> pd.DataFrame:
+    """PSA OpenSTAT schools export -> tidy region / level / value / sy.
+
+    The export is semicolon-separated, has a title line before the header, region names
+    start with ".." and the value column is named after the school year (e.g. "2020-2021").
+    Only rows with Type of School = Public are kept.
+    """
+    raw = pd.read_csv(path, sep=";", skiprows=skiprows, encoding=encoding)
+    raw = raw.dropna(subset=["Geolocation"])
+    raw = raw[raw["Type of School"].astype(str).str.strip().str.lower() == "public"]
+    out = pd.DataFrame(
+        {
+            "region": raw["Geolocation"].astype(str).str.lstrip(". ").str.strip(),
+            "level": raw["Level of Education"],
+            "value": raw[sy],
+        }
+    )
+    return out.assign(sy=sy)

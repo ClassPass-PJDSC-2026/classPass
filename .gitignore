@@ -12,5 +12,3 @@ htmlcov/
 .ipynb_checkpoints/
 .DS_Store
 .env
-data/processed/*
-!data/processed/.gitkeep

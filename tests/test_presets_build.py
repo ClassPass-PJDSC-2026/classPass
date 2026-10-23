@@ -2,9 +2,18 @@ import logging
 
 import pandas as pd
 import pandas.testing as pdt
+import pytest
 
+from schoolsim.params import REPO_ROOT
 from schoolsim.presets import load_presets, lookup
-from schoolsim.presets_build import REGION_ALIASES, build_presets, canonical_region, sanity_check
+from schoolsim.presets_build import (
+    REGION_ALIASES,
+    build_presets,
+    canonical_region,
+    load_psa_schools,
+    load_wide,
+    sanity_check,
+)
 
 
 def test_every_placeholder_region_is_a_canonical_region(tmp_path):
@@ -65,3 +74,41 @@ def test_output_is_readable_by_the_loader(tmp_path):
     table, placeholder = load_presets(path)
     assert placeholder is False
     assert lookup(table, "NCR", "Elementary")["learners_per_classroom"] == 45.0
+
+RAW = REPO_ROOT / "data" / "raw"
+
+
+def test_load_wide_melts_levels(tmp_path):
+    path = tmp_path / "wide.csv"
+    path.write_text("Region,Elementary,Junior High School\nRegion I,10,5\nNCR,20,8\n", encoding="utf-8")
+    out = load_wide(path, "2020-2021")
+    assert list(out.columns) == ["region", "level", "value", "sy"]
+    assert len(out) == 4 and set(out["sy"]) == {"2020-2021"}
+    assert out[(out.region == "NCR") & (out.level == "Junior High School")]["value"].iloc[0] == 8
+
+
+def test_load_psa_schools_handles_title_line_dots_and_type(tmp_path):
+    path = tmp_path / "schools.csv"
+    path.write_text(
+        '"TABLE 10.10 Number of Schools"\n\n'
+        '"Geolocation";"Level of Education";"Type of School";"2020-2021"\n'
+        '"..NCR";"Elementary";"Public";519\n'
+        '"..NCR";"Elementary";"Private";700\n',
+        encoding="utf-8",
+    )
+    out = load_psa_schools(path, "2020-2021")
+    assert len(out) == 1
+    assert out.iloc[0]["region"] == "NCR" and out.iloc[0]["value"] == 519
+
+
+def test_real_raw_files_give_a_complete_presets_table():
+    out = build_presets(
+        load_wide(RAW / "psa_enrollment.csv", "2020-2021"),
+        load_psa_schools(RAW / "psa_schools.csv", "2020-2021"),
+        load_wide(RAW / "deped_classrooms.csv", "2019-2020"),
+    )
+    assert len(out) == 51  # 17 regions x 3 levels
+    assert out["learners_per_classroom"].notna().all()
+    row = out[(out.region == "NCR") & (out.level == "Elementary")].iloc[0]
+    assert row.learners_per_classroom == pytest.approx(45.08, abs=0.01)  # TeacherPH prints 45.08
+    assert sanity_check(out).empty
