@@ -27,6 +27,7 @@ from compare_tab import render_compare  # noqa: E402
 from notices import DATA_NOTICE, FOOTER_NOTICE, render_privacy_notice  # noqa: E402
 from results_tab import render_results  # noqa: E402
 from seat_map_tab import render_seat_map  # noqa: E402
+from sensitivity_tab import render_sensitivity  # noqa: E402
 from teacher_log_tab import render_teacher_log  # noqa: E402
 
 from schoolsim.calibrate import (  # noqa: E402
@@ -162,7 +163,7 @@ def main() -> None:
     with tab_seats:
         render_seat_map(profile, values, params)
     with tab_sens:
-        st.info("The sensitivity analysis is built in ticket #13.")
+        render_sensitivity(profile, active_params, backend)
     with tab_log:
         render_teacher_log(profile, params)
     with tab_assume:
