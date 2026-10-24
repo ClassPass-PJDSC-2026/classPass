@@ -11,6 +11,7 @@ import streamlit as st
 
 FOOTER_NOTICE = "Scenario simulation for decision support, not a medical forecast."
 DATA_NOTICE = "Synthetic and aggregate data only. Nothing you enter is saved. Do not enter real student records."
+LOG_BANNER = "Demo uses synthetic data only. Do not upload real student records."
 
 NOTICE_POINTS = (
     (

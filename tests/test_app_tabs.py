@@ -190,7 +190,7 @@ def test_footer_carries_both_notices():
 
 def test_assumptions_tab_shows_the_privacy_notice():
     at = start()
-    tab = at.tabs[4]
+    tab = at.tabs[5]
     assert any("Privacy and responsible use" in h.value for h in tab.subheader)
     text = " ".join(m.value for m in tab.markdown)
     assert "Synthetic and aggregate data only" in text and "Nothing is saved" in text

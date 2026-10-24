@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/labillescharlene21-lab/classPass/actions/workflows/ci.yml/badge.svg)](https://github.com/labillescharlene21-lab/classPass/actions/workflows/ci.yml)
 
-* **Live Demo:** Currently runs locally. See the Quickstart below.
+*   **Live Demo:** Currently runs locally. See the Quickstart below.
 *   **Demo Video:** [Link to be added Oct 24]
 
 ## Problem
