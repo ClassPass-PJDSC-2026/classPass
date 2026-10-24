@@ -167,7 +167,8 @@ def main() -> None:
     with tab_log:
         render_teacher_log(profile, params)
     with tab_assume:
-        st.info("The full assumptions table is built in ticket #15.")
+        with open("docs/assumptions.md", encoding="utf-8") as f:
+            st.markdown(f.read())
         render_privacy_notice()
 
     st.caption(FOOTER_NOTICE)
