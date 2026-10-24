@@ -27,6 +27,8 @@ from compare_tab import render_compare  # noqa: E402
 from notices import DATA_NOTICE, FOOTER_NOTICE, render_privacy_notice  # noqa: E402
 from results_tab import render_results  # noqa: E402
 from seat_map_tab import render_seat_map  # noqa: E402
+from sensitivity_tab import render_sensitivity  # noqa: E402
+from teacher_log_tab import render_teacher_log  # noqa: E402
 
 from schoolsim.calibrate import (  # noqa: E402
     DISEASE_PRESETS,
@@ -37,6 +39,7 @@ from schoolsim.engine import PROFILE_FIELDS, get_backend  # noqa: E402
 from schoolsim.inputs import engine_values  # noqa: E402
 from schoolsim.params import load_params, load_references  # noqa: E402
 from schoolsim.presets import load_presets  # noqa: E402
+from schoolsim.sicklog import with_i0  # noqa: E402
 
 LOGGER = logging.getLogger("schoolsim.app")
 
@@ -130,6 +133,7 @@ def main() -> None:
         st.stop()
 
     values = engine_values(active_params, profile)
+    values = with_i0(values, st.session_state.get("i0_override"))
     calibrated_quanta = (
         active_params["quanta_rate"].value if transmission_mode == "calibrated" else None
     )
@@ -144,8 +148,8 @@ def main() -> None:
         st.error("The simulation could not run with these inputs. Change them and press Run simulation.")
         st.stop()
 
-    tab_results, tab_compare, tab_seats, tab_sens, tab_assume = st.tabs(
-        ["Results", "Compare", "Seat map", "Sensitivity", "Assumptions"]
+    tab_results, tab_compare, tab_seats, tab_sens, tab_log, tab_assume = st.tabs(
+        ["Results", "Compare", "Seat map", "Sensitivity", "Teacher log", "Assumptions"]
     )
     with tab_results:
         render_results(
@@ -159,7 +163,9 @@ def main() -> None:
     with tab_seats:
         render_seat_map(profile, values, params)
     with tab_sens:
-        st.info("The sensitivity analysis is built in ticket #13.")
+        render_sensitivity(profile, active_params, backend)
+    with tab_log:
+        render_teacher_log(profile, params)
     with tab_assume:
         st.info("The full assumptions table is built in ticket #15.")
         render_privacy_notice()

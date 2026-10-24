@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from schoolsim import _stub_spatial as sp
+from schoolsim import spatial as sp
 from schoolsim.params import base_values, load_params
 from schoolsim.seating import (
     nearest_label,
