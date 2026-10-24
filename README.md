@@ -16,13 +16,14 @@ School administrators currently have to choose between in-person, hybrid, or onl
 ## How It Works
 The simulation follows a two-step pipeline: 
 
-mermaid
+```mermaid
 graph TD
     A[Input: params.yaml & Sidebar] --> B(Wells-Riley Model)
     B --> C{Calculate Transmission Rate β}
     C --> D(SEIR Model)
     D --> E[RK4 ODE Solver]
     E --> F[Results & Sensitivity Dashboard]
+```
 Regional enrollment and school figures: Philippine Statistics Authority, OpenSTAT (source agency: Department of Education), https://openstat.psa.gov.ph, licensed under CC BY 4.0 (terms: https://openstat.psa.gov.ph/Terms). Accessed [date]. We filtered, merged and divided the figures to compute learners per classroom by region and level. Changes were made by the project team. This project is not endorsed by the PSA or DepEd.
 
 ## LMS integration roadmap
